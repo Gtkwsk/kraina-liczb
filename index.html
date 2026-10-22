@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#5b3fd6">
+<title>Kraina Liczb – Własności liczb naturalnych</title>
+<style>
+:root{--bg1:#6a4cff;--bg2:#00c2d1;--card:#fff;--ink:#22223b;--muted:#6b6b85;--ok:#1aa64b;--bad:#e5484d;--gold:#ffb703;--violet:#5b3fd6;--soft:#f3f0ff;--r:18px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color:var(--ink);background:linear-gradient(160deg,var(--bg1),var(--bg2));min-height:100vh;font-size:18px;line-height:1.45}
+#app{max-width:760px;margin:0 auto;padding:12px 12px 90px}
+header.top{display:flex;align-items:center;gap:10px;color:#fff;padding:6px 4px 12px}
+header.top h1{font-size:1.25rem;margin:0;flex:1;line-height:1.2}
+.keys-pill{background:rgba(255,255,255,.2);border-radius:999px;padding:6px 12px;font-weight:700;white-space:nowrap}
+.card{background:var(--card);border-radius:var(--r);padding:16px;margin:0 0 14px;box-shadow:0 6px 20px rgba(0,0,0,.12)}
+.card h2{margin:0 0 8px;font-size:1.3rem}
+.card h3{margin:12px 0 6px;font-size:1.1rem}
+.muted{color:var(--muted)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:12px 20px;border:none;border-radius:14px;background:var(--violet);color:#fff;font-size:1.05rem;font-weight:700;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.2);touch-action:manipulation}
+.btn:active{transform:translateY(2px);box-shadow:none}
+.btn.secondary{background:#ece8ff;color:var(--violet)}
+.btn.gold{background:var(--gold);color:#3b2a00}
+.btn.block{width:100%}
+.btn:disabled{opacity:.45}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>.btn{flex:1 1 140px}
+.map{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(min-width:560px){.map{grid-template-columns:1fr 1fr 1fr}}
+.place{background:#fff;border-radius:var(--r);padding:12px;min-height:120px;border:none;text-align:left;font:inherit;color:inherit;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.12);position:relative;display:flex;flex-direction:column;gap:4px}
+.place .emo{font-size:2rem}
+.place .nr{font-size:.8rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.place .tt{font-weight:800;font-size:1rem;line-height:1.2}
+.place .st{font-size:.85rem;color:var(--muted);margin-top:auto}
+.place.done{background:linear-gradient(160deg,#fff7d6,#fff)}
+.place.done::after{content:"🔑";position:absolute;top:8px;right:10px;font-size:1.5rem}
+.place.boss{grid-column:1/-1;background:linear-gradient(135deg,#2b2d42,#5c5470);color:#fff}
+.place.boss .nr,.place.boss .st{color:#ddd}
+.place.epi{grid-column:1/-1;background:linear-gradient(135deg,#fff,#e8fff3)}
+.progress{height:14px;background:rgba(255,255,255,.35);border-radius:999px;overflow:hidden}
+.progress>div{height:100%;background:var(--gold);border-radius:999px;transition:width .4s}
+.keysrow{display:flex;gap:4px;flex-wrap:wrap;font-size:1.5rem;margin-top:6px}
+.keysrow span{opacity:.25;filter:grayscale(1)}
+.keysrow span.on{opacity:1;filter:none}
+.zerek{display:flex;gap:10px;align-items:flex-start;background:var(--soft);border-radius:14px;padding:10px 12px;margin:8px 0}
+.zerek .av{font-size:2rem;line-height:1}
+.rule{background:#fffbe6;border-left:6px solid var(--gold);border-radius:12px;padding:10px 12px;margin:8px 0}
+.rule b{color:#7a4b00}
+.ex{background:#eefaff;border-left:6px solid var(--bg2);border-radius:12px;padding:10px 12px;margin:8px 0}
+.q{font-size:1.2rem;font-weight:700;margin:4px 0 12px}
+.q .big{font-size:1.6rem;letter-spacing:.03em}
+.opts{display:grid;gap:10px}
+.opts.grid2{grid-template-columns:1fr 1fr}
+.opts.grid4{grid-template-columns:repeat(4,1fr)}
+.opts.grid5{grid-template-columns:repeat(5,1fr)}
+.opt{min-height:56px;border-radius:14px;border:3px solid #ddd6ff;background:#fff;font:inherit;font-weight:700;font-size:1.1rem;cursor:pointer;padding:8px;color:var(--ink);touch-action:manipulation}
+.opt.sel{border-color:var(--violet);background:#ece8ff}
+.opt.right{border-color:var(--ok);background:#e3f9ea}
+.opt.wrong{border-color:var(--bad);background:#ffe8e8}
+.display{min-height:60px;border-radius:14px;border:3px solid #ddd6ff;background:#fafaff;font-size:1.6rem;font-weight:800;display:flex;align-items:center;padding:6px 14px;margin-bottom:10px;word-break:break-all}
+.display.empty{color:#aaa;font-size:1rem;font-weight:600}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pad button{min-height:56px;font-size:1.4rem;font-weight:800;border-radius:14px;border:none;background:#ece8ff;color:var(--violet);cursor:pointer;touch-action:manipulation}
+.pad button:active{background:#d6ceff}
+.pad button.wide{grid-column:span 1}
+.fb{border-radius:14px;padding:12px;margin-top:12px}
+.fb.ok{background:#e3f9ea;border:2px solid var(--ok)}
+.fb.bad{background:#ffe8e8;border:2px solid var(--bad)}
+.fb h4{margin:0 0 6px;font-size:1.15rem}
+.bar{height:10px;background:#eee;border-radius:999px;overflow:hidden;margin:6px 0 12px}
+.bar>div{height:100%;background:linear-gradient(90deg,var(--bg1),var(--bg2));transition:width .3s}
+.topinfo{display:flex;justify-content:space-between;font-size:.9rem;color:var(--muted);font-weight:700}
+nav.bottom{position:fixed;left:0;right:0;bottom:0;background:#fff;display:flex;justify-content:center;gap:4px;padding:6px 6px calc(6px + env(safe-area-inset-bottom));box-shadow:0 -4px 16px rgba(0,0,0,.12);z-index:10}
+nav.bottom button{flex:1;max-width:190px;min-height:56px;border:none;background:none;font:inherit;font-size:.85rem;font-weight:700;color:var(--muted);border-radius:12px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center}
+nav.bottom button span{font-size:1.4rem}
+nav.bottom button.on{color:var(--violet);background:var(--soft)}
+input.num{font:inherit;font-size:1.4rem;font-weight:700;padding:10px 12px;border-radius:12px;border:3px solid #ddd6ff;width:100%;min-height:54px}
+.tools{display:grid;gap:12px}
+.sieve{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin:10px 0}
+.sieve button{aspect-ratio:1;border:none;border-radius:8px;background:#ece8ff;font:inherit;font-weight:800;font-size:clamp(.75rem,3.4vw,1.05rem);cursor:pointer;padding:0;color:var(--ink);position:relative;touch-action:manipulation}
+.sieve button.x{background:#eee;color:#bbb;text-decoration:line-through}
+.sieve button.p{background:var(--gold);color:#3b2a00;box-shadow:inset 0 0 0 3px #c98a00}
+.sieve button.flash{animation:fl .5s}
+@keyframes fl{0%{transform:scale(1.25);background:#ffb4b4}100%{transform:scale(1)}}
+table.split{border-collapse:collapse;font-size:1.3rem;font-weight:800;margin:8px 0}
+table.split td{padding:4px 14px;text-align:right}
+table.split td:first-child{border-right:3px solid var(--ink)}
+table.split td.why{border:none;font-size:.85rem;font-weight:500;color:var(--muted);text-align:left}
+.chk{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid #eee}
+.chk .ic{font-size:1.4rem;width:1.6rem;text-align:center}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.chip{padding:4px 10px;border-radius:999px;background:#ece8ff;font-weight:700}
+.chip.hl{background:var(--gold)}
+.big-emo{font-size:3.5rem;text-align:center}
+.center{text-align:center}
+.toast{position:fixed;left:50%;top:16px;transform:translateX(-50%);background:#22223b;color:#fff;padding:10px 16px;border-radius:12px;z-index:20;font-weight:700;max-width:90vw;text-align:center}
+ul.rev li{margin:6px 0}
+details summary{cursor:pointer;font-weight:800;min-height:40px;display:flex;align-items:center}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<nav class="bottom">
+  <button id="nav-map" class="on"><span>🗺️</span>Mapa</button>
+  <button id="nav-tools"><span>🧰</span>Narzędzia</button>
+  <button id="nav-book"><span>📖</span>Księga zasad</button>
+</nav>
+<script>
+// ===== CORE-START: matematyka (bez DOM) =====
+"use strict";
+var C = {
+  gcd: function(a,b){a=Math.abs(a);b=Math.abs(b);while(b){var t=a%b;a=b;b=t;}return a;},
+  lcm: function(a,b){return a/C.gcd(a,b)*b;},
+  isPrime: function(n){if(!Number.isInteger(n)||n<2)return false;for(var d=2;d*d<=n;d++)if(n%d===0)return false;return true;},
+  divisors: function(n){var lo=[],hi=[];for(var d=1;d*d<=n;d++){if(n%d===0){lo.push(d);if(d*d!==n)hi.unshift(n/d);}}return lo.concat(hi);},
+  factorize: function(n){var r=[],d=2;while(n>1){if(d*d>n){r.push(n);break;}while(n%d===0){r.push(d);n=n/d;}d++;}return r;},
+  digits: function(n){return String(n).split('').map(Number);},
+  digitSum: function(n){return C.digits(n).reduce(function(a,b){return a+b;},0);},
+  isLeap: function(y){return (y%4===0&&y%100!==0)||y%400===0;},
+  sup: function(k){var m={'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};return String(k).split('').map(function(c){return m[c];}).join('');},
+  fmt: function(n){var s=String(n);if(s.length<5)return s;return s.replace(/\B(?=(\d{3})+(?!\d))/g,'\u00a0');},
+  prodStr: function(f){return f.join(' · ');},
+  powStr: function(f){var out=[],i=0;while(i<f.length){var j=i;while(j<f.length&&f[j]===f[i])j++;var k=j-i;out.push(f[i]+(k>1?C.sup(k):''));i=j;}return out.join(' · ');},
+  multisetCommon: function(a,b){var r=[],bb=b.slice();a.forEach(function(x){var i=bb.indexOf(x);if(i>=0){r.push(x);bb.splice(i,1);}});return r;},
+  multisetUnion: function(a,b){var r=a.slice(),aa=a.slice();b.forEach(function(x){var i=aa.indexOf(x);if(i>=0)aa.splice(i,1);else r.push(x);});return r.sort(function(x,y){return x-y;});},
+  // Wyjaśnienie cechy podzielności. Zwraca {ok, text}; ok zawsze równe n % d === 0.
+  rule: function(n,d){
+    var s=String(n), last=s[s.length-1], ok=n%d===0, two=n%100, tw=(n<10?String(n):String(two).padStart(2,'0'));
+    var ds=C.digits(n), sum=C.digitSum(n), sumTxt=ds.join(' + ')+' = '+sum;
+    var t='';
+    if(d===2) t='Ostatnia cyfra to '+last+'. Przez 2 dzielą się liczby, które kończą się na 0, 2, 4, 6 lub 8.';
+    else if(d===5) t='Ostatnia cyfra to '+last+'. Przez 5 dzielą się liczby, które kończą się na 0 lub 5.';
+    else if(d===10) t='Ostatnia cyfra to '+last+'. Przez 10 dzielą się liczby, które kończą się zerem.';
+    else if(d===100) t='Dwie ostatnie cyfry to '+tw+'. Przez 100 dzielą się liczby, które kończą się dwoma zerami (00).';
+    else if(d===1000) t='Trzy ostatnie cyfry to '+(n<100?s:String(n%1000).padStart(3,'0'))+'. Przez 1000 dzielą się liczby, które kończą się trzema zerami (000).';
+    else if(d===3||d===9) t='Suma cyfr: '+sumTxt+'. '+sum+(sum%d===0?' dzieli się':' nie dzieli się')+' przez '+d+', więc liczba '+(ok?'dzieli się':'nie dzieli się')+' przez '+d+'.';
+    else if(d===4) t=(n<10?'Liczba jest jednocyfrowa: '+n+'. ':'Dwie ostatnie cyfry tworzą liczbę '+two+'. ')+(n<10?n:two)+(two%4===0?' dzieli się':' nie dzieli się')+' przez 4.';
+    else if(d===25) t='Dwie ostatnie cyfry to '+tw+'. Przez 25 dzielą się liczby zakończone na 00, 25, 50 lub 75.';
+    else if(d===6) t='Przez 6 dzielą się liczby podzielne jednocześnie przez 2 i przez 3. Przez 2: '+(n%2===0?'tak':'nie')+' (ostatnia cyfra '+last+'). Przez 3: '+(sum%3===0?'tak':'nie')+' (suma cyfr '+sum+').';
+    else if(d===15) t='Przez 15 dzielą się liczby podzielne jednocześnie przez 3 i przez 5. Przez 3: '+(sum%3===0?'tak':'nie')+' (suma cyfr '+sum+'). Przez 5: '+(n%5===0?'tak':'nie')+' (ostatnia cyfra '+last+').';
+    else t=C.fmt(n)+' : '+d+' = '+Math.floor(n/d)+(n%d?' reszta '+n%d:'')+'.';
+    return {ok:ok,text:t};
+  }
+};
+// ===== losowanie =====
+var R = {
+  i: function(a,b){return a+Math.floor(Math.random()*(b-a+1));},
+  pick: function(a){return a[Math.floor(Math.random()*a.length)];},
+  shuffle: function(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;},
+  coin: function(){return Math.random()<0.5;}
+};
+// ===== konstruktory zadań =====
+// Odpowiedzi: tf/choice -> indeks; multi -> posortowana tablica indeksów; num/open -> liczba; list/fact -> tablica liczb
+function sameSet(a,b){a=Array.from(new Set(a)).sort(function(x,y){return x-y;});b=Array.from(new Set(b)).sort(function(x,y){return x-y;});return a.length===b.length&&a.every(function(x,i){return x===b[i];});}
+var T = {
+  tf: function(q,truth,explain,meta){return {kind:'tf',q:q,options:['Prawda','Fałsz'],canonical:truth?0:1,check:function(r){return r===(truth?0:1);},explain:explain,meta:meta||{f:'tf',v:truth}};},
+  choice: function(q,options,idx,explain,meta){var order=R.shuffle(options.map(function(_,i){return i;}));var opts=order.map(function(i){return options[i];});var ci=order.indexOf(idx);return {kind:'choice',q:q,options:opts,canonical:ci,check:function(r){return r===ci;},explain:explain,meta:meta};},
+  multi: function(q,options,correct,explain,meta,noShuffle){var order=noShuffle?options.map(function(_,i){return i;}):R.shuffle(options.map(function(_,i){return i;}));var opts=order.map(function(i){return options[i];});var cs=correct.map(function(i){return order.indexOf(i);}).sort(function(a,b){return a-b;});return {kind:'multi',q:q,options:opts,canonical:cs,check:function(r){return sameSet(r||[],cs);},explain:explain,meta:meta};},
+  num: function(q,ans,explain,meta){return {kind:'num',q:q,canonical:ans,check:function(r){return r===ans;},explain:explain,meta:meta||{f:'num'}};},
+  open: function(q,fn,sample,explain,meta){return {kind:'num',q:q,canonical:sample,check:function(r){return typeof r==='number'&&fn(r);},explain:explain,meta:meta||{f:'open'}};},
+  list: function(q,ans,explain,meta){return {kind:'list',q:q,canonical:ans.slice(),check:function(r){return Array.isArray(r)&&sameSet(r,ans);},explain:explain,meta:meta};},
+  fact: function(q,n,explain){return {kind:'fact',q:q,canonical:C.factorize(n),check:function(r){if(!Array.isArray(r)||!r.length)return false;if(!r.every(function(x){return C.isPrime(x);}))return false;return r.reduce(function(a,b){return a*b;},1)===n;},explain:explain,meta:{f:'fact',n:n}};}
+};
+function pl(n,few,many){var a=n%10,b=n%100;return n+' '+((a>=2&&a<=4&&!(b>=12&&b<=14))?few:many);}
+function B(x){return '<span class="big">'+C.fmt(x)+'</span>';}
+// ===== generatory =====
+var G = {};
+// --- 1. Wielokrotności
+G.multIs = function(){var a=R.i(3,15),yes=R.coin(),n=yes?a*R.i(3,15):a*R.i(3,15)+R.i(1,a-1);var ok=n%a===0;
+  return T.tf('Czy liczba '+B(n)+' jest wielokrotnością liczby '+a+'?',ok,ok?n+' = '+a+' · '+(n/a)+', więc to wielokrotność '+a+'.':a+' · '+Math.floor(n/a)+' = '+a*Math.floor(n/a)+', a '+a+' · '+(Math.floor(n/a)+1)+' = '+a*(Math.floor(n/a)+1)+'. Liczba '+n+' jest pomiędzy, więc nie jest wielokrotnością '+a+' (reszta '+n%a+').',{f:'divides',a:n,b:a,v:ok});};
+G.multList = function(){var a=R.i(3,15),k=R.i(4,8),exact=R.coin(),b=exact?a*(k+1):a*k+R.i(1,a-1),incl=R.coin();var lim=incl?b:b-1;var ans=[];for(var m=a;m<=lim;m+=a)ans.push(m);
+  return T.list('Wypisz wszystkie wielokrotności liczby '+a+' (bez zera) '+(incl?'<u>nie większe od</u> ':'<u>mniejsze od</u> ')+b+'. Oddzielaj przecinkami.',ans,'Liczymy '+a+' · 1, '+a+' · 2, …: '+ans.join(', ')+'. '+(incl?'„Nie większe od” – liczbę '+b+' bierzemy, jeśli jest wielokrotnością.':'„Mniejsze od” – liczby '+b+' nie bierzemy.'),{f:'multiplesBelow',a:a,lim:lim});};
+G.multNext = function(){var a=R.i(3,19),b=R.i(20,150);var ans=a*(Math.floor(b/a)+1);
+  return T.num('Jaka jest najmniejsza wielokrotność liczby '+a+' <u>większa od</u> '+b+'?',ans,a+' · '+Math.floor(b/a)+' = '+a*Math.floor(b/a)+' (nie jest większe od '+b+'), więc następna to '+a+' · '+(Math.floor(b/a)+1)+' = '+ans+'.',{f:'nextMultiple',a:a,b:b});};
+G.multCount2 = function(){var a=R.i(3,20);var ans=Math.floor(99/a)-Math.floor(9/a);var lo=a*(Math.floor(9/a)+1),hi=a*Math.floor(99/a);
+  return T.num('Ile jest <u>dwucyfrowych</u> wielokrotności liczby '+a+'?',ans,'Najmniejsza dwucyfrowa to '+lo+' = '+a+' · '+lo/a+', największa to '+hi+' = '+a+' · '+hi/a+'. Mnożniki od '+lo/a+' do '+hi/a+' – to '+ans+' liczb.',{f:'count2digitMultiples',a:a});};
+G.multPick = function(){var a=R.i(4,9);var right=a*R.i(5,14);var wrong=[];while(wrong.length<3){var w=R.i(right-12,right+12);if(w>a&&w%a!==0&&wrong.indexOf(w)<0)wrong.push(w);}var opts=[right].concat(wrong);
+  return T.choice('Która z liczb jest wielokrotnością liczby '+a+'?',opts.map(String),0,right+' = '+a+' · '+right/a+'. Pozostałe przy dzieleniu przez '+a+' dają resztę.',{f:'pickMultiple',a:a,opts:opts,ans:right});};
+var F1 = [
+ function(){return T.tf('Dla każdej liczby można wskazać jej <b>największą</b> wielokrotność.',false,'Fałsz. Wielokrotności jest nieskończenie wiele – Skoczek może skakać bez końca. Nie ma największej.');},
+ function(){return T.tf('Zero jest wielokrotnością każdej liczby naturalnej.',true,'Prawda. Każda liczba razy 0 daje 0.');},
+ function(){return T.tf('Każda liczba naturalna jest swoją wielokrotnością.',true,'Prawda. Np. 7 = 7 · 1.');},
+ function(){return T.tf('Każda liczba naturalna jest wielokrotnością liczby 0.',false,'Fałsz. Wielokrotności zera to 0 · 1, 0 · 2, … – zawsze 0. Np. 5 nie jest wielokrotnością zera.');},
+ function(){return T.num('Ile jest wielokrotności liczby 13 (bez zera) mniejszych od 130?',9,'13, 26, 39, 52, 65, 78, 91, 104, 117 – to 9 liczb. 130 nie jest mniejsze od 130!');}
+];
+// --- 2. Dzielniki
+G.divList = function(){var n=R.pick([12,18,20,24,28,30,32,36,40,42,44,45,48,50,54,56,60,63,64,66,70,72,75,80,84,90,96,98,100]);var d=C.divisors(n);var pairs=[];for(var i=0;i<Math.ceil(d.length/2);i++)pairs.push(d[i]+' · '+d[d.length-1-i]);
+  return T.list('Wypisz <b>wszystkie dzielniki</b> liczby '+B(n)+'. Oddzielaj przecinkami.',d,'Szukamy par: '+pairs.join(', ')+'. Dzielniki: '+d.join(', ')+'.',{f:'divisors',n:n});};
+G.divCount = function(){var n=R.i(10,100);var d=C.divisors(n);
+  return T.num('Ile dzielników ma liczba '+B(n)+'?',d.length,'Dzielniki '+n+': '+d.join(', ')+' – razem '+d.length+'.',{f:'divCount',n:n});};
+G.divIs = function(){var n=R.pick([24,36,48,60,72,84,90,96,100,120,144]);var dd=R.i(2,15);var ok=n%dd===0;
+  return T.tf('Czy '+dd+' jest dzielnikiem liczby '+n+'?',ok,ok?n+' : '+dd+' = '+n/dd+' bez reszty.':n+' : '+dd+' = '+Math.floor(n/dd)+' reszta '+n%dd+'.',{f:'divides',a:n,b:dd,v:ok});};
+G.remainder = function(){var b=R.i(3,9),a=R.i(20,99);var q=Math.floor(a/b),r=a%b;
+  return T.num('Ile wynosi <b>reszta</b> z dzielenia '+a+' przez '+b+'?',r,a+' = '+b+' · '+q+' + '+r+'. Reszta musi być mniejsza od '+b+'.',{f:'mod',a:a,b:b});};
+var F2 = [
+ function(){return T.tf('Liczba 0 jest dzielnikiem każdej liczby naturalnej.',false,'Fałsz! Nie dzielimy przez zero. Zero jest wielokrotnością każdej liczby, ale nigdy dzielnikiem.');},
+ function(){return T.tf('Liczba 1 jest dzielnikiem każdej liczby naturalnej.',true,'Prawda. Każdą liczbę można podzielić przez 1.');},
+ function(){return T.tf('Każda liczba naturalna różna od zera jest swoim dzielnikiem.',true,'Prawda. Np. 12 : 12 = 1.');},
+ function(){return T.tf('Liczba 36 ma nieskończenie wiele dzielników.',false,'Fałsz. Dzielników jest skończenie wiele: 1, 2, 3, 4, 6, 9, 12, 18, 36. Nieskończenie wiele jest wielokrotności.');},
+ function(){return T.num('Książę ma 12 monet i chce je rozdać rycerzom po równo. Jaka jest najmniejsza liczba rycerzy (większa od 1), dla której nic nie zostanie?',2,'Dzielniki 12: 1, 2, 3, 4, 6, 12. Najmniejszy większy od 1 to 2.');},
+ function(){return T.choice('Jeśli 3 jest dzielnikiem liczby 12, to…',['12 jest wielokrotnością 3','3 jest wielokrotnością 12','12 jest dzielnikiem 3','nic z tego nie wynika'],0,'Dzielnik i wielokrotność to dwie strony tej samej monety: 12 = 3 · 4.');}
+];
+// --- 3. Cechy 2, 5, 10, 100, 1000
+function genByD(d,count){var out=[];while(out.length<count){var n;var t=R.i(0,3);if(d>=100)n=t<2?R.i(1,99)*d:R.i(1,99)*d+R.pick([10,30,50,70,d/2,d/10]);else n=R.i(100,9999);if(d===1000&&t===2)n=R.i(10,99)*1000+R.pick([100,500,10]);if(out.indexOf(n)<0)out.push(n);}if(!out.some(function(x){return x%d===0;}))out[0]=R.i(10,99)*d;return out;}
+G.markD = function(){var d=R.pick([2,5,10,100,1000]);var ns=genByD(d,6);var cor=[];ns.forEach(function(n,i){if(n%d===0)cor.push(i);});
+  return T.multi('Zaznacz <b>wszystkie</b> liczby podzielne przez <b>'+d+'</b>.',ns.map(C.fmt),cor,ns.map(function(n){return C.fmt(n)+': '+(n%d===0?'✓':'✗');}).join('; ')+'. '+C.rule(ns[0],d).text.split('. ').slice(1).join('. '),{f:'markDiv',ns:ns,d:d});};
+G.tf100 = function(){var d=R.pick([10,100,1000]);var n=R.pick([R.i(1,99)*d,R.i(1,9)*d*10+d/10*R.i(1,9),R.i(11,99)*100+R.i(1,9)*10]);var r=C.rule(n,d);
+  return T.tf('Liczba '+B(n)+' jest podzielna przez '+d+'.',r.ok,r.text,{f:'divides',a:n,b:d,v:r.ok});};
+G.not25 = function(){var lo=R.pick([10,20,30,40]),hi=R.pick([100,110,120]);var c=0;for(var n=lo+1;n<hi;n++)if(n%2&&n%5)c++;
+  return T.num('Ile jest liczb większych od '+lo+' i mniejszych od '+hi+', które <b>nie dzielą się ani przez 2, ani przez 5</b>?',c,'Takie liczby kończą się cyfrą 1, 3, 7 lub 9 – po 4 w każdej dziesiątce. Od '+(lo+1)+' do '+(hi-1)+' takich dziesiątek jest '+(c/4)+', więc '+(c/4)+' · 4 = '+c+'.',{f:'countNot25',lo:lo,hi:hi});};
+var F3 = [
+ function(){return T.open('Podaj dowolną liczbę <b>dwucyfrową</b> podzielną przez 5, ale <b>niepodzielną przez 10</b>.',function(r){return r>=10&&r<=99&&r%5===0&&r%10!==0;},25,'Musi kończyć się cyfrą 5: 15, 25, 35, …, 95.');},
+ function(){return T.tf('Liczba 7030 jest podzielna przez 100.',false,'Fałsz. Dwie ostatnie cyfry to 30, a nie 00. Liczy się tylko koniec liczby! (7300 – tak).');},
+ function(){return T.tf('Każda liczba podzielna przez 10 jest podzielna przez 2 i przez 5.',true,'Prawda. Kończy się zerem, a 0 pasuje i do cechy dwójki, i piątki.');},
+ function(){return T.tf('Liczba 2552 jest podzielna przez 5.',false,'Fałsz. Piątki w środku nie mają znaczenia – ostatnia cyfra to 2.');},
+ function(){return T.open('Podaj najmniejszą liczbę <b>czterocyfrową</b> podzielną przez 1000.',function(r){return r===1000;},1000,'1000 – kończy się trzema zerami.');}
+];
+// --- 4. Cechy 3 i 9
+function markGen(d){var ns=[];while(ns.length<6){var n=R.i(100,9999);if(R.i(0,2)===0)n=n-n%d;if(n<100)continue;if(ns.indexOf(n)<0)ns.push(n);}if(!ns.some(function(x){return x%d===0;}))ns[0]=ns[0]-ns[0]%d+d;return ns;}
+G.mark39 = function(){var d=R.pick([3,9]);var ns=markGen(d);var cor=[];ns.forEach(function(n,i){if(n%d===0)cor.push(i);});
+  return T.multi('Zaznacz <b>wszystkie</b> liczby podzielne przez <b>'+d+'</b>.',ns.map(C.fmt),cor,ns.map(function(n){return C.fmt(n)+': suma cyfr '+C.digitSum(n)+(n%d===0?' ✓':' ✗');}).join('; ')+'.',{f:'markDiv',ns:ns,d:d});};
+G.digitSum = function(){var n=R.i(1000,99999);return T.num('Ile wynosi <b>suma cyfr</b> liczby '+B(n)+'?',C.digitSum(n),C.digits(n).join(' + ')+' = '+C.digitSum(n)+'.',{f:'digitSum',n:n});};
+function missingDigit(d){for(;;){var len=R.i(3,4),pos=R.i(0,len-1);var ds=[];for(var i=0;i<len;i++)ds.push(i===0?R.i(1,9):R.i(0,9));var ok=[];for(var x=0;x<=9;x++){if(pos===0&&x===0)continue;ds[pos]=x;var n=Number(ds.join(''));if(n%d===0)ok.push(x);}if(ok.length===0||ok.length>5)continue;var shown=ds.map(function(c,i){return i===pos?'▢':c;}).join('');return {shown:shown,ok:ok,pos:pos,ds:ds,len:len};}}
+G.missing = function(dd){var d=dd||R.pick([3,9,3,4]);var m=missingDigit(d);var opts=[0,1,2,3,4,5,6,7,8,9].map(String);var expl;
+  if(d===4)expl='Patrzymy na dwie ostatnie cyfry. Pasują cyfry: '+m.ok.join(', ')+'.';else{var known=m.ds.filter(function(_,i){return i!==m.pos;});var s=known.reduce(function(a,b){return a+b;},0);expl='Znane cyfry dają sumę '+known.join(' + ')+' = '+s+'. Całość ma dzielić się przez '+d+'. Pasują cyfry: '+m.ok.join(', ')+'.';}
+  var q=T.multi('Jakie cyfry można wstawić w okienko, żeby liczba <span class="big">'+m.shown+'</span> była podzielna przez <b>'+d+'</b>? Zaznacz <b>wszystkie</b>.'+(m.pos===0?' (Pierwsza cyfra nie może być zerem.)':''),opts,m.ok,expl,{f:'missing',shown:m.shown,d:d},true);q.grid='grid5';return q;};
+G.small39 = function(){var d=R.pick([3,9]),len=R.pick([3,4]);var lo=Math.pow(10,len-1);var ans=Math.ceil(lo/d)*d;
+  return T.num('Jaka jest najmniejsza liczba <b>'+(len===3?'trzycyfrowa':'czterocyfrowa')+'</b> podzielna przez '+d+'?',ans,'Zaczynamy od '+lo+' (suma cyfr 1) i dokładamy na końcu tyle, by suma cyfr dzieliła się przez '+d+': '+ans+' (suma cyfr '+C.digitSum(ans)+').',{f:'smallestDiv',len:len,d:d});};
+var F4 = [
+ function(){return T.tf('Każda liczba podzielna przez 3 jest podzielna przez 9.',false,'Fałsz! Np. 12, 15, 21 dzielą się przez 3, ale nie przez 9.');},
+ function(){return T.tf('Każda liczba podzielna przez 9 jest podzielna przez 3.',true,'Prawda, bo 9 = 3 · 3.');},
+ function(){return T.tf('Liczba 27 nie dzieli się przez 3, bo kończy się cyfrą 7.',false,'Fałsz. Przy trójce NIE patrzymy na ostatnią cyfrę. Suma cyfr 2 + 7 = 9, więc 27 = 3 · 9.');},
+ function(){return T.tf('Liczba 2457 jest podzielna przez 9.',true,'2 + 4 + 5 + 7 = 18, a 18 dzieli się przez 9. Rzeczywiście 2457 = 9 · 273.');}
+];
+// --- 5. Cecha 4, 25, łączenie, lata przestępne
+G.mark4 = function(){var d=R.pick([4,4,25]);var ns=[];while(ns.length<6){var n=R.i(100,9999);if(ns.indexOf(n)<0&&(R.coin()||n%2===0))ns.push(n);}if(d===4){ns[R.i(0,5)]=R.i(10,99)*100+R.pick([12,16,32,36,52,56,72,76,96,8,4]);ns[R.i(0,5)]=R.i(10,99)*100+R.pick([14,18,26,34,38,54,58,74,94]);}else{ns[R.i(0,5)]=R.i(10,99)*100+R.pick([25,50,75,0]);ns[R.i(0,5)]=R.i(10,99)*100+R.pick([15,35,55,45,20,5,10]);}
+  ns=Array.from(new Set(ns));while(ns.length<6){var x=R.i(100,9999);if(ns.indexOf(x)<0)ns.push(x);}var cor=[];ns.forEach(function(n,i){if(n%d===0)cor.push(i);});
+  return T.multi('Zaznacz <b>wszystkie</b> liczby podzielne przez <b>'+d+'</b>.',ns.map(C.fmt),cor,(d===4?'Patrzymy na dwie ostatnie cyfry: ':'Koniec 00, 25, 50 lub 75: ')+ns.map(function(n){return C.fmt(n)+' → '+String(n%100).padStart(2,'0')+(n%d===0?' ✓':' ✗');}).join('; ')+'.',{f:'markDiv',ns:ns,d:d});};
+G.divSet = function(){var n=R.pick([120,140,180,150,360,450,600,225,300,720,900,1200,175,240,4500]);if(R.coin())n=R.i(10,999)*R.pick([2,5,10,3]);var ds=[2,3,4,5,9,10,25,100];var cor=[];ds.forEach(function(d,i){if(n%d===0)cor.push(i);});if(!cor.length)return G.divSet();
+  var q=T.multi('Przez które z podanych liczb jest podzielna liczba '+B(n)+'? Zaznacz wszystkie.',ds.map(String),cor,ds.map(function(d){return d+': '+(n%d===0?'tak':'nie');}).join(', ')+'. Suma cyfr = '+C.digitSum(n)+', dwie ostatnie cyfry = '+String(n%100).padStart(2,'0')+'.',{f:'divSet',n:n},true);q.grid='grid4';return q;};
+G.leap = function(){var y=R.pick([R.i(1900,2099),R.i(1900,2099),R.pick([1600,1700,1800,1900,2000,2100,2400])]);var ok=C.isLeap(y);var e;if(y%100===0)e='Rok kończy się dwoma zerami – jest przestępny tylko wtedy, gdy dzieli się przez 400. '+y+(y%400===0?' dzieli się przez 400.':' nie dzieli się przez 400.');else e='Dwie ostatnie cyfry: '+String(y%100).padStart(2,'0')+(y%4===0?' – dzielą się przez 4.':' – nie dzielą się przez 4.');
+  return T.tf('Rok '+y+' jest (był) rokiem <b>przestępnym</b>.',ok,e,{f:'leap',y:y,v:ok});};
+G.combo = function(){var d=R.pick([6,15]);var n=R.i(100,999);if(R.coin())n=n-n%d;if(n<100)n+=d;var r=C.rule(n,d);
+  return T.tf('Liczba '+B(n)+' jest podzielna przez '+d+'.',r.ok,r.text,{f:'divides',a:n,b:d,v:r.ok});};
+var F5 = [
+ function(){return T.tf('Każda liczba parzysta jest podzielna przez 4.',false,'Fałsz. Np. 26 jest parzyste, ale 26 : 4 = 6 reszta 2.');},
+ function(){return T.tf('Liczba 34 dzieli się przez 4, bo kończy się czwórką.',false,'Fałsz. Patrzymy na dwie ostatnie cyfry: 34 nie dzieli się przez 4 (4 · 8 = 32).');},
+ function(){return T.open('Podaj dowolną liczbę dwucyfrową podzielną <b>przez 2 i przez 9</b>.',function(r){return r>=10&&r<=99&&r%18===0;},36,'To wielokrotności 18: 18, 36, 54, 72, 90.');},
+ function(){return T.tf('Liczba 12 jest podzielna przez 2 i przez 4, więc jest podzielna przez 8.',false,'Fałsz. 12 : 8 = 1 reszta 4. Łączyć można tylko cechy liczb bez wspólnego dzielnika (np. 2 i 3 → 6).');},
+ function(){var q=T.multi('Przez które z podanych liczb jest podzielna liczba <span class="big">120</span>? Zaznacz wszystkie.',['2','3','4','5','9','10','25','100'],[0,1,2,3,5],'2 tak (0 na końcu), 3 tak (1+2+0=3), 4 tak (20), 5 tak, 9 nie (suma 3), 10 tak, 25 nie (20), 100 nie (jedno zero).',{f:'divSet',n:120},true);q.grid='grid4';return q;}
+];
+// --- 6. Liczby pierwsze
+var TRICKY=[1,9,15,21,27,33,39,49,51,57,63,69,77,81,87,91,93,99];
+G.primeTf = function(){var n=R.coin()?R.pick(TRICKY.concat([2,3,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97])):R.i(2,100);var p=C.isPrime(n);var e;
+  if(n===1)e='1 ma tylko jeden dzielnik – nie jest ani pierwsza, ani złożona.';else if(p)e=n+' ma tylko dwa dzielniki: 1 i '+n+'. Sprawdzamy 2, 3, 5, 7 – żadna nie dzieli '+n+'.';else{var f=C.factorize(n);e=n+' = '+f[0]+' · '+(n/f[0])+', więc ma więcej niż dwa dzielniki – jest złożona.';}
+  return T.tf('Liczba '+B(n)+' jest liczbą <b>pierwszą</b>.',p,e,{f:'prime',n:n,v:p});};
+G.primePick = function(){var pool=R.shuffle(TRICKY.concat([0,2,4,25,35,45,55,85,95]).concat([2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97]));var ns=Array.from(new Set(pool)).slice(0,8);if(!ns.some(C.isPrime))ns[0]=R.pick([13,29,47,89]);var cor=[];ns.forEach(function(n,i){if(C.isPrime(n))cor.push(i);});var wantPrime=true;
+  var q=T.multi('Zaznacz <b>wszystkie liczby pierwsze</b>.',ns.map(String),cor,ns.map(function(n){return n+(C.isPrime(n)?' – pierwsza':n<2?' – ani pierwsza, ani złożona':' – złożona ('+C.factorize(n)[0]+' · '+n/C.factorize(n)[0]+')');}).join('; ')+'.',{f:'primePick',ns:ns});q.grid='grid4';return q;};
+G.compPick = function(){var ns=R.shuffle([0,1,2,3,5,7,11,13,17,19,23,29,31,4,6,9,15,21,27,49,51,57,91,87]).slice(0,8);if(!ns.some(function(n){return n>1&&!C.isPrime(n);}))ns[0]=51;var cor=[];ns.forEach(function(n,i){if(n>1&&!C.isPrime(n))cor.push(i);});
+  var q=T.multi('Zaznacz <b>wszystkie liczby złożone</b>.',ns.map(String),cor,'Złożona = więcej niż dwa dzielniki. 0 i 1 nie są ani pierwsze, ani złożone. '+ns.filter(function(n){return n>1&&!C.isPrime(n);}).map(function(n){return n+' = '+C.factorize(n)[0]+' · '+n/C.factorize(n)[0];}).join(', ')+'.',{f:'compPick',ns:ns});q.grid='grid4';return q;};
+G.primeSet = function(){var P=[2,3,5,7,11,13,17,19,23,29,31,37,41,43,47];function set(bad){var s=R.shuffle(P).slice(0,4);if(bad!==undefined)s[R.i(0,3)]=bad;return '{ '+s.sort(function(a,b){return a-b;}).join(', ')+' }';}
+  var bads=R.shuffle([1,0,9,15,21,27,51,57,91,49]).slice(0,3);var opts=[set()].concat(bads.map(function(b){return set(b);}));
+  return T.choice('Który zbiór zawiera <b>tylko</b> liczby pierwsze?',opts,0,'Tylko '+opts[0]+'. W pozostałych są: '+bads.join(', ')+' – a to nie są liczby pierwsze.',{f:'primeSet',opts:opts});};
+var F6 = [
+ function(){return T.tf('Liczba 1 jest liczbą pierwszą.',false,'Fałsz! 1 ma tylko jeden dzielnik. 0 i 1 nie są ani pierwsze, ani złożone.');},
+ function(){return T.tf('Liczba 2 jest jedyną parzystą liczbą pierwszą.',true,'Prawda. Każda inna liczba parzysta dzieli się przez 2, więc jest złożona.');},
+ function(){return T.tf('Każda liczba nieparzysta jest liczbą pierwszą.',false,'Fałsz. Np. 9 = 3 · 3, 15 = 3 · 5, 21 = 3 · 7.');},
+ function(){var lim=R.pick([20,30,50]);var c=0;for(var n=2;n<lim;n++)if(C.isPrime(n))c++;return T.num('Ile jest liczb pierwszych <b>mniejszych od '+lim+'</b>?',c,'To: '+[].concat.apply([],Array.from({length:lim},function(_,i){return C.isPrime(i)?[i]:[];})).join(', ')+' – razem '+c+'.',{f:'countPrimes',lim:lim});},
+ function(){return T.num('Jaka jest <b>największa dwucyfrowa</b> liczba pierwsza?',97,'99 = 9 · 11, 98 parzysta, 97 – nie dzieli się przez 2, 3, 5 ani 7. To 97.');},
+ function(){return T.tf('Liczba 91 jest liczbą pierwszą.',false,'Fałsz – to przebieraniec! 91 = 7 · 13.');}
+];
+// --- 7. Rozkład na czynniki
+function randComposite(){for(;;){var k=R.i(2,5),f=[];for(var i=0;i<k;i++)f.push(R.pick([2,2,2,3,3,5,7]));if(R.i(0,3)===0)f[0]=R.pick([11,13,17,19]);var n=f.reduce(function(a,b){return a*b;},1);if(n>=12&&n<=720)return n;}}
+function stepsText(n){var f=C.factorize(n),cur=n,s=[];f.forEach(function(p){s.push(cur+' | '+p);cur/=p;});s.push('1 |');return s.join(' ; ');}
+G.fact = function(){var n=randComposite();var f=C.factorize(n);
+  return T.fact('Rozłóż liczbę '+B(n)+' na czynniki pierwsze. Wpisuj czynniki, oddzielając je znakiem ×.',n,'Metoda kreski: '+stepsText(n)+'. Wynik: '+n+' = '+C.prodStr(f)+(f.length>1?' = '+C.powStr(f):'')+'.');};
+G.factChoice = function(){var n=randComposite();var f=C.factorize(n);if(f.length<3)return G.factChoice();var right=C.prodStr(f);var comp=[f[0]*f[1]].concat(f.slice(2));var withOne=['1'].concat(f);var wrongF=f.slice();wrongF[wrongF.length-1]=wrongF[wrongF.length-1]===2?3:2;
+  var opts=[right,C.prodStr(comp),withOne.join(' · '),C.prodStr(wrongF.sort(function(a,b){return a-b;}))];
+  return T.choice('Który zapis to <b>rozkład na czynniki pierwsze</b> liczby '+B(n)+'?',opts,0,'Poprawnie: '+right+'. Zapis z '+(f[0]*f[1])+' – to nie jest liczba pierwsza. Jedynki nie wpisujemy. Ostatni zapis daje inny iloczyn.',{f:'factChoice',n:n,ans:right});};
+G.fromFact = function(){var n=randComposite();var f=C.factorize(n);
+  return T.num('Jaka liczba ma rozkład '+(R.coin()?C.prodStr(f):C.powStr(f))+'?',n,C.prodStr(f)+' = '+n+'. Mnożymy wszystkie czynniki.',{f:'product',fs:f});};
+G.power = function(){var cube=R.coin();var a=cube?R.i(2,6):R.i(2,12);var ans=cube?a*a*a:a*a;
+  return T.num('Oblicz: '+B(a)+'<span class="big">'+(cube?'³':'²')+'</span>',ans,cube?a+' · '+a+' · '+a+' = '+ans+' (sześcian).':a+' · '+a+' = '+ans+' (kwadrat).',{f:'pow',a:a,k:cube?3:2});};
+var F7 = [
+ function(){return T.tf('Zapis 60 = 4 · 15 to rozkład liczby 60 na czynniki pierwsze.',false,'Fałsz. 4 i 15 nie są pierwsze. 60 = 2 · 2 · 3 · 5.');},
+ function(){return T.tf('Liczba 64 jest jednocześnie kwadratem i sześcianem.',true,'Prawda: 64 = 8 · 8 = 8² oraz 64 = 4 · 4 · 4 = 4³.');},
+ function(){return T.fact('Rozłóż liczbę <span class="big">360</span> na czynniki pierwsze.',360,'360 = 2 · 2 · 2 · 3 · 3 · 5 = 2³ · 3² · 5.');},
+ function(){return T.choice('Jak zapisać 2 · 2 · 2 · 3 · 3 za pomocą potęg?',['2³ · 3²','2² · 3³','6⁵','2 · 3 · 5'],0,'Trzy dwójki to 2³, dwie trójki to 3². Razem 2³ · 3² = 72.');}
+];
+// --- 8. NWD
+function nwdPair(){for(;;){var g=R.pick([1,2,3,4,5,6,7,8,9,10,12,14,15,18]);var x=R.i(1,12),y=R.i(2,15);if(x===y||C.gcd(x,y)!==1)continue;var a=g*x,b=g*y;if(a<4||b>300)continue;return R.coin()?[a,b]:[b,a];}}
+function nwdExpl(a,b){var fa=C.factorize(a),fb=C.factorize(b),cm=C.multisetCommon(fa,fb),g=C.gcd(a,b);return a+' = '+(fa.length?C.prodStr(fa):'1')+', '+b+' = '+C.prodStr(fb)+'. Wspólne czynniki: '+(cm.length?C.prodStr(cm):'brak')+' → NWD = '+g+'.'+(g===1?' Liczby są względnie pierwsze.':'');}
+G.nwd = function(){var p=nwdPair();var a=p[0],b=p[1];return T.num('Oblicz <b>NWD('+a+', '+b+')</b>.',C.gcd(a,b),nwdExpl(a,b),{f:'gcd',a:a,b:b});};
+G.nwdWord = function(){var p=nwdPair();while(C.gcd(p[0],p[1])<2)p=nwdPair();var a=p[0],b=p[1],g=C.gcd(a,b);var t=R.i(0,2);var q;
+  if(t===0)q='Królowa ma '+pl(a,'ciastka czekoladowe','ciastek czekoladowych')+' i '+pl(b,'waniliowe','waniliowych')+'. Chce je rozłożyć na talerze tak, by na każdym było tyle samo czekoladowych i tyle samo waniliowych, i nic nie zostało. Ile <b>najwięcej</b> talerzy może przygotować?';
+  else if(t===1)q='Krawiec ma dwie wstążki: '+a+' cm i '+b+' cm. Chce pociąć obie na <b>jak najdłuższe</b> kawałki tej samej długości bez resztek. Ile centymetrów będzie miał każdy kawałek?';
+  else q='Kwiaciarka ma '+pl(a,'róże','róż')+' i '+pl(b,'tulipany','tulipanów')+'. Chce zrobić <b>jak najwięcej</b> jednakowych bukietów, zużywając wszystkie kwiaty. Ile bukietów zrobi?';
+  return T.num(q,g,'Dzielimy na równe części → NWD. '+nwdExpl(a,b)+(t===1?' Kawałków: '+a/g+' + '+b/g+' = '+(a/g+b/g)+'.':' Na każdy: '+a/g+' i '+b/g+'.'),{f:'gcd',a:a,b:b});};
+var F8 = [
+ function(){return T.num('Oblicz <b>NWD(600, 72)</b>.',24,'600 = 2 · 2 · 2 · 3 · 5 · 5, 72 = 2 · 2 · 2 · 3 · 3. Wspólne: 2 · 2 · 2 · 3 = 24.',{f:'gcd',a:600,b:72});},
+ function(){return T.num('Oblicz <b>NWD(8, 24)</b>.',8,'24 dzieli się przez 8, więc NWD to mniejsza liczba: 8.',{f:'gcd',a:8,b:24});},
+ function(){return T.tf('NWD(15, 28) = 1, chociaż 15 i 28 nie są liczbami pierwszymi.',true,'Prawda. 15 = 3 · 5, 28 = 2 · 2 · 7 – brak wspólnych czynników. Są względnie pierwsze.');},
+ function(){return T.choice('Dzielniki 12: 1, 2, 3, 4, 6, 12. Dzielniki 18: 1, 2, 3, 6, 9, 18. Ile wynosi NWD(12, 18)?',['6','3','36','2'],0,'Wspólne dzielniki: 1, 2, 3, 6. Największy to 6.',{f:'gcdChoice',a:12,b:18});}
+];
+// --- 9. NWW
+function nwwPair(){for(;;){var a=R.i(2,30),b=R.i(2,30);if(a===b)continue;if(C.lcm(a,b)>600)continue;return [a,b];}}
+function nwwExpl(a,b){var fa=C.factorize(a),fb=C.factorize(b),u=C.multisetUnion(fa,fb),l=C.lcm(a,b);return a+' = '+C.prodStr(fa)+', '+b+' = '+C.prodStr(fb)+'. Bierzemy każdy czynnik tyle razy, ile najwięcej występuje: '+C.prodStr(u)+' = '+l+'.';}
+G.nww = function(){var p=nwwPair();var a=p[0],b=p[1];return T.num('Oblicz <b>NWW('+a+', '+b+')</b>.',C.lcm(a,b),nwwExpl(a,b),{f:'lcm',a:a,b:b});};
+G.nwwWord = function(){var p;do{p=nwwPair();}while(C.gcd(p[0],p[1])<2&&R.coin());var a=p[0],b=p[1],l=C.lcm(a,b);var t=R.i(0,2);var q;
+  if(t===0)q='Z przystanku w Dębicy jeden autobus odjeżdża co '+pl(a,'minuty','minut')+', a drugi co '+pl(b,'minuty','minut')+'. Przed chwilą odjechały razem. Po ilu minutach <b>znowu odjadą jednocześnie</b>?';
+  else if(t===1)q='Jedna latarnia morska błyska co '+pl(a,'sekundy','sekund')+', druga co '+pl(b,'sekundy','sekund')+'. Właśnie błysnęły razem. Po ilu sekundach <b>najwcześniej</b> znów błysną razem?';
+  else q='Ania odwiedza babcię co '+a+' dni, a Kasia co '+b+' dni. Dziś spotkały się u babci. Za ile dni <b>znowu spotkają się</b> u babci?';
+  return T.num(q,l,'Coś powtarza się i pytamy, kiedy znów razem → NWW. '+nwwExpl(a,b),{f:'lcm',a:a,b:b});};
+G.kind = function(){var W=[['Mamy 24 jabłka i 36 gruszek. Robimy jak najwięcej jednakowych paczek.',0],['Dwa pociągi odjeżdżają co 15 i co 20 minut. Kiedy znów odjadą razem?',1],['Tniemy dwie deski na jak najdłuższe równe kawałki bez resztek.',0],['Szukamy najmniejszej liczby, która dzieli się przez 6 i przez 8.',1],['Dzielimy 30 chłopców i 45 dziewczynek na jak najwięcej jednakowych drużyn.',0],['Dwa zegary dzwonią co 12 i co 18 minut. Kiedy znowu zadzwonią jednocześnie?',1],['Układamy płytki 8 cm i 12 cm w dwa rzędy. Jaka najkrótsza długość rzędu będzie taka sama?',1],['Rozdzielamy 48 cukierków i 60 lizaków na jak najwięcej równych torebek.',0]];var w=R.pick(W);
+  return T.choice('Co trzeba obliczyć? <br><i>„'+w[0]+'”</i>',['NWD','NWW'],w[1],w[1]===0?'Dzielimy na równe części / jak najwięcej paczek / jak najdłuższe kawałki → NWD.':'Coś się powtarza i pytamy, kiedy znów razem / najmniejsza wspólna liczba → NWW.',{f:'kind',v:w[1]});};
+var F9 = [
+ function(){return T.choice('Ile wynosi <b>NWW(4, 6)</b>?',['12','24','2','6'],0,'Wielokrotności 6: 6, 12 – a 12 dzieli się przez 4. NWW = 12. Iloczyn 24 to też wspólna wielokrotność, ale nie najmniejsza!',{f:'lcmChoice',a:4,b:6});},
+ function(){return T.tf('NWW dwóch liczb to zawsze ich iloczyn.',false,'Fałsz. NWW(4, 6) = 12, a 4 · 6 = 24. Iloczyn wychodzi tylko wtedy, gdy liczby nie mają wspólnych czynników (np. NWW(3, 5) = 15).');},
+ function(){return T.num('Oblicz <b>NWW(75, 60)</b>.',300,'75 = 3 · 5 · 5, 60 = 2 · 2 · 3 · 5. Bierzemy 2 · 2 · 3 · 5 · 5 = 300.',{f:'lcm',a:75,b:60});},
+ function(){return T.num('Oblicz <b>NWW(4, 12)</b>.',12,'12 jest wielokrotnością 4, więc NWW to większa liczba: 12.',{f:'lcm',a:4,b:12});},
+ function(){return T.num('NWD(12, 18) = 6. Wiedząc, że NWD · NWW = 12 · 18, oblicz NWW(12, 18).',36,'12 · 18 = 216, 216 : 6 = 36.',{f:'lcm',a:12,b:18});}
+];
+var FBOSS = [
+ function(){return T.choice('Suma dwóch liczb to 63, a ich NWD to 7. Która para pasuje?',['28 i 35','21 i 42','30 i 33','9 i 54'],0,'28 + 35 = 63 i NWD(28, 35) = 7. Para 21 i 42 ma NWD 21, para 30 i 33 – NWD 3, para 9 i 54 – NWD 9.',{f:'sum63'});}
+];
+// ===== rozdziały =====
+var CH = [
+ {id:1,emo:'🦗',title:'Dolina Wielokrotności',topic:'Wielokrotności',gens:['multIs','multList','multNext','multCount2','multPick'],fixed:F1,
+  story:'Skoczek Trójka skacze po kamiennej osi: 3, 6, 9, 12… Każdy kamień, na którym wyląduje, to wielokrotność trójki.',
+  rule:'<div class="rule"><b>Wielokrotność liczby</b> to wynik mnożenia tej liczby przez liczbę naturalną (0, 1, 2, 3, …).</div><div class="ex">Wielokrotności 3: 0, 3, 6, 9, 12, 15, …<br>Wielokrotności 13 mniejsze od 130: 13, 26, 39, 52, 65, 78, 91, 104, 117 (bez 130!).</div><div class="rule">• Każda liczba jest swoją wielokrotnością.<br>• Zero jest wielokrotnością każdej liczby.<br>• Wielokrotności jest nieskończenie wiele – <b>nie ma największej</b>.<br>• Uważaj: „mniejsze od” – granicy nie bierzemy; „nie większe od” – bierzemy.</div>'},
+ {id:2,emo:'🏰',title:'Zamek Dzielników',topic:'Dzielniki',gens:['divList','divCount','divIs','remainder'],fixed:F2,
+  story:'Książę Dwunastka chce rozdać 12 monet rycerzom po równo, żeby nic nie zostało dla Pana Reszty.',
+  rule:'<div class="rule"><b>Dzielnik liczby</b> to liczba, przez którą ta liczba dzieli się <b>bez reszty</b>.</div><div class="ex">Dzielniki 36 – szukamy par: 1 · 36, 2 · 18, 3 · 12, 4 · 9, 6 · 6 → 1, 2, 3, 4, 6, 9, 12, 18, 36.</div><div class="rule">• 1 jest dzielnikiem każdej liczby.<br>• Każda liczba różna od 0 jest swoim dzielnikiem.<br>• <b>Nie dzielimy przez zero</b> – 0 nie jest dzielnikiem żadnej liczby.<br>• Jeśli 3 jest dzielnikiem 12, to 12 jest wielokrotnością 3.<br>• Dzielenie z resztą: 23 = 5 · 4 + 3 (reszta mniejsza od dzielnika).</div>'},
+ {id:3,emo:'🚪',title:'Brama Ostatniej Cyfry',topic:'Cechy podzielności przez 2, 5, 10, 100, 1000',gens:['markD','tf100','not25'],fixed:F3,
+  story:'Strażnicy bram patrzą tylko na koniec liczby. Żadnego dzielenia pisemnego!',
+  rule:'<div class="rule"><b>Przez 2</b> – ostatnia cyfra 0, 2, 4, 6, 8 (liczby parzyste).<br><b>Przez 5</b> – ostatnia cyfra 0 lub 5.<br><b>Przez 10</b> – na końcu 0.<br><b>Przez 100</b> – na końcu 00.<br><b>Przez 1000</b> – na końcu 000.</div><div class="ex">3578 – przez 2 tak (8). 2552 – przez 5 nie (2). 7300 – przez 100 tak, ale 7030 – nie (na końcu 30).</div><div class="rule">Liczba podzielna przez 10 dzieli się też przez 2 i przez 5.</div>'},
+ {id:4,emo:'⛏️',title:'Kopalnia Sumy Cyfr',topic:'Cechy podzielności przez 3 i 9',gens:['mark39','digitSum','missing','small39'],fixed:F4,
+  story:'Mistrz Dziewiątka: „Tu ostatnia cyfra nic ci nie powie. Trzeba zejść do wnętrza liczby!”',
+  rule:'<div class="rule"><b>Przez 3</b> – suma cyfr dzieli się przez 3.<br><b>Przez 9</b> – suma cyfr dzieli się przez 9.</div><div class="ex">2457: 2 + 4 + 5 + 7 = 18 → dzieli się przez 3 i przez 9.<br>5271: suma 15 → przez 3 tak, przez 9 nie.</div><div class="rule">• Przy 3 i 9 <b>nie patrzymy na ostatnią cyfrę</b> (27 dzieli się przez 3, 13 nie).<br>• Podzielna przez 9 ⇒ podzielna przez 3. Odwrotnie nie (12)!</div>'},
+ {id:5,emo:'🌉',title:'Most Dwóch Cyfr',topic:'Podzielność przez 4, 25, łączenie cech, lata przestępne',gens:['mark4','divSet','leap','combo'],fixed:F5,
+  story:'Most Czwórki ma tylko dwie deski: przedostatnią i ostatnią cyfrę.',
+  rule:'<div class="rule"><b>Przez 4</b> – dwie ostatnie cyfry tworzą liczbę podzielną przez 4.<br><b>Przez 25</b> – koniec 00, 25, 50 lub 75.<br><b>Przez 6</b> – przez 2 i przez 3.<br><b>Przez 15</b> – przez 3 i przez 5.</div><div class="ex">1316 → 16 ✓. 2318 → 18 ✗. 738: parzysta, suma 18 → dzieli się przez 6.</div><div class="rule">• Parzystość nie wystarczy (26 ✗).<br>• Rok przestępny: dzieli się przez 4; lata z 00 na końcu – tylko gdy dzielą się przez 400 (2000 tak, 1900 nie).</div>'},
+ {id:6,emo:'🗼',title:'Wieża Liczb Pierwszych',topic:'Liczby pierwsze i złożone',gens:['primeTf','primePick','compPick','primeSet'],fixed:F6,
+  story:'Eratostenes z Aleksandrii przesiewa liczby swoim sitem. Zostają tylko liczby pierwsze.',
+  rule:'<div class="rule"><b>Liczba pierwsza</b> ma <b>dokładnie dwa</b> dzielniki: 1 i samą siebie.<br><b>Liczba złożona</b> ma więcej niż dwa dzielniki.<br><b>0 i 1 nie są ani pierwsze, ani złożone.</b></div><div class="ex">Pierwsze do 20: 2, 3, 5, 7, 11, 13, 17, 19.<br>Przebierańcy (złożone!): 51 = 3 · 17, 57 = 3 · 19, 87 = 3 · 29, 91 = 7 · 13.</div><div class="rule">• 2 to jedyna parzysta liczba pierwsza.<br>• Liczbę mniejszą od 100 sprawdzasz dzieląc przez 2, 3, 5 i 7.<br>• Wypróbuj <b>Sito Eratostenesa</b> w Narzędziach!</div>'},
+ {id:7,emo:'🔨',title:'Warsztat Rozkładania',topic:'Rozkład na czynniki pierwsze, potęgi',gens:['fact','fact','factChoice','fromFact','power'],fixed:F7,
+  story:'Kowal rozbija liczby młotem na cegiełki – liczby pierwsze.',
+  rule:'<div class="rule"><b>Rozkład na czynniki pierwsze</b> to zapis liczby jako iloczynu <b>samych liczb pierwszych</b>.</div><div class="ex">Metoda kreski:<table class="split"><tr><td>60</td><td>2</td></tr><tr><td>30</td><td>2</td></tr><tr><td>15</td><td>3</td></tr><tr><td>5</td><td>5</td></tr><tr><td>1</td><td></td></tr></table>60 = 2 · 2 · 3 · 5 = 2² · 3 · 5</div><div class="rule">• 60 = 4 · 15 to jeszcze <b>nie</b> rozkład (4 i 15 nie są pierwsze).<br>• Jedynki nie wpisujemy.<br>• Sprawdzaj mnożeniem!<br>• Kwadrat: 7² = 49. Sześcian: 5³ = 125.</div>'},
+ {id:8,emo:'🍪',title:'Uczta u Królowej NWD',topic:'NWD',gens:['nwd','nwd','nwdWord','nwdWord'],fixed:F8,
+  story:'Królowa ma 24 ciastka czekoladowe i 36 waniliowych. Ile najwięcej jednakowych talerzy?',
+  rule:'<div class="rule"><b>NWD</b> – największy wspólny dzielnik: największa liczba, przez którą dzielą się obie liczby.</div><div class="ex">Sposób 1: dzielniki 12: 1, 2, 3, 4, 6, 12; dzielniki 18: 1, 2, 3, 6, 9, 18 → NWD = 6.<br>Sposób 2: 24 = 2 · 2 · 2 · 3, 36 = 2 · 2 · 3 · 3 → wspólne 2 · 2 · 3 = 12.</div><div class="rule">• Jeśli jedna liczba dzieli drugą, NWD = mniejsza (NWD(8, 24) = 8).<br>• NWD = 1 → liczby względnie pierwsze.<br>• Zadania: <b>równe części, jak najwięcej paczek, jak najdłuższe kawałki</b> → NWD.</div>'},
+ {id:9,emo:'💡',title:'Latarnie Króla NWW',topic:'NWW',gens:['nww','nww','nwwWord','nwwWord','kind'],fixed:F9,
+  story:'Latarnie błyskają co 4 i co 6 sekund. Kiedy błysną razem?',
+  rule:'<div class="rule"><b>NWW</b> – najmniejsza wspólna wielokrotność: najmniejsza liczba <b>różna od zera</b>, która dzieli się przez obie liczby.</div><div class="ex">Sposób 1: wielokrotności 6: 6, 12 → 12 dzieli się przez 4 → NWW(4, 6) = 12.<br>Sposób 2: 75 = 3 · 5 · 5, 60 = 2 · 2 · 3 · 5 → 2 · 2 · 3 · 5 · 5 = 300.</div><div class="rule">• NWW to <b>nie zawsze</b> iloczyn (4 · 6 = 24, a NWW = 12).<br>• NWD · NWW = iloczyn dwóch liczb.<br>• Zadania: <b>kiedy znów razem / jednocześnie</b> → NWW.</div>'}
+];
+var BOSS = {id:10,emo:'🧥',title:'Pojedynek z Panem Resztą',topic:'Test ze wszystkiego'};
+function buildSession(ch,n){n=n||10;var tasks=[],seen={};var fixed=R.shuffle(ch.fixed).slice(0,Math.min(4,ch.fixed.length));var tries=0;
+  fixed.forEach(function(f){var t=f();if(!seen[t.q]){seen[t.q]=1;tasks.push(t);}});
+  while(tasks.length<n&&tries<200){tries++;var g=G[R.pick(ch.gens)];var t=g();if(seen[t.q])continue;seen[t.q]=1;tasks.push(t);}
+  tasks.forEach(function(t){t.topic=ch.topic;t.chapter=ch.id;});return R.shuffle(tasks);}
+function buildBoss(){var tasks=[];CH.forEach(function(ch){var s=buildSession(ch,ch.id===7||ch.id===8||ch.id===9?2:1);tasks=tasks.concat(s.slice(0,ch.id>=6?2:1));});
+  var extra=FBOSS[0]();extra.topic='NWD';extra.chapter=8;tasks.push(extra);var k=G.kind();k.topic='NWD czy NWW';k.chapter=9;tasks.push(k);
+  while(tasks.length>15)tasks.splice(R.i(0,tasks.length-1),1);
+  while(tasks.length<15){var ch=R.pick(CH);var t=G[R.pick(ch.gens)]();t.topic=ch.topic;t.chapter=ch.id;tasks.push(t);}
+  return R.shuffle(tasks);}
+// ===== CORE-END =====
+if(typeof module!=='undefined')module.exports={C:C,R:R,T:T,G:G,CH:CH,BOSS:BOSS,F:[F1,F2,F3,F4,F5,F6,F7,F8,F9,FBOSS],buildSession:buildSession,buildBoss:buildBoss,sameSet:sameSet};
+
+// ===== UI =====
+(function(){
+var STORE_KEY='krainaLiczb.v1';
+var P=load();
+function load(){try{var s=JSON.parse(localStorage.getItem(STORE_KEY)||'{}');return {keys:s.keys||{},best:s.best||{},boss:s.boss||null};}catch(e){return {keys:{},best:{},boss:null};}}
+function save(){try{localStorage.setItem(STORE_KEY,JSON.stringify(P));}catch(e){}}
+var app=document.getElementById('app');
+var S={quiz:null,entry:'',sel:[],answered:false,sieve:null,fact:{n:360,step:0},chk:2457,pair:[24,36]};
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function nKeys(){var c=0;for(var i=1;i<=10;i++)if(P.keys[i])c++;return c;}
+function keysRow(){var h='<div class="keysrow">';for(var i=1;i<=10;i++)h+='<span class="'+(P.keys[i]?'on':'')+'" title="Klucz '+i+'">🔑</span>';return h+'</div>';}
+function top(title,back){return '<header class="top">'+(back?'<button class="btn secondary" data-go="'+back+'" aria-label="Wróć" style="min-height:44px;padding:8px 14px">←</button>':'<span style="font-size:1.8rem">0️⃣</span>')+'<h1>'+title+'</h1><span class="keys-pill">🔑 '+nKeys()+'/10</span></header>';}
+function toast(msg){var t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(function(){t.remove();},2600);}
+function setNav(w){['map','tools','book'].forEach(function(k){document.getElementById('nav-'+k).classList.toggle('on',k===w);});}
+function go(h){if(location.hash===h)render();else location.hash=h;}
+window.addEventListener('hashchange',render);
+document.getElementById('nav-map').onclick=function(){go('#/');};
+document.getElementById('nav-tools').onclick=function(){go('#/tools');};
+document.getElementById('nav-book').onclick=function(){go('#/book');};
+var OKMSG=['Świetnie!','Brawo, Mikołaj!','Pan Reszta zgrzyta zębami!','Klucz coraz bliżej!','Super, tak trzymaj!','Zerek skacze z radości!'];
+var BADMSG=['Ups! Pan Reszta zabrał okruszek… ale spokojnie:','Prawie! Zobacz, jak to policzyć:','Nic straconego – oto wyjaśnienie:','Pomyłki uczą najwięcej. Popatrz:'];
+
+function render(){var h=location.hash||'#/';var p=h.slice(2).split('/');window.scrollTo(0,0);
+  if(p[0]==='ch')return chapter(+p[1]);
+  if(p[0]==='quiz'){if(!S.quiz)return go('#/');return quiz();}
+  if(p[0]==='result'){if(!S.quiz)return go('#/');return result();}
+  if(p[0]==='tools')return tools();
+  if(p[0]==='tool')return tool(p[1]);
+  if(p[0]==='book')return book();
+  return home();}
+
+function home(){setNav('map');var k=nKeys();
+  var h=top('Kraina Liczb')+'<div class="card"><div class="zerek"><div class="av">0️⃣</div><div><b>Zerek:</b> Cześć, Mikołaj! Pan Reszta psuje porządek w Krainie Liczb. Zbierz <b>10 kluczy wiedzy</b> – w każdym miejscu rozwiąż co najmniej 8 z 10 zadań. Ostatni klucz zdobędziesz w pojedynku!</div></div>'
+  +'<div class="topinfo"><span>Postęp wyprawy</span><span>'+k+' / 10 kluczy</span></div><div class="bar"><div style="width:'+k*10+'%"></div></div>'+keysRow()+'</div><div class="map">';
+  CH.forEach(function(ch){var b=P.best[ch.id];h+='<button class="place'+(P.keys[ch.id]?' done':'')+'" data-go="#/ch/'+ch.id+'"><span class="emo">'+ch.emo+'</span><span class="nr">Rozdział '+ch.id+'</span><span class="tt">'+ch.title+'</span><span class="st">'+(b!=null?'Najlepszy wynik: '+b+'/10':'Jeszcze nie odwiedzone')+'</span></button>';});
+  h+='<button class="place boss'+(P.keys[10]?' done':'')+'" data-go="#/ch/10"><span class="emo">🧥⚔️</span><span class="nr">Rozdział 10</span><span class="tt">Pojedynek z Panem Resztą</span><span class="st">'+(P.boss?'Ostatni wynik: '+P.boss.score+'/15':'15 zadań ze wszystkiego')+'</span></button>';
+  h+='<button class="place epi" data-go="#/book"><span class="emo">📖</span><span class="nr">Epilog</span><span class="tt">Wielka Księga Zasad</span><span class="st">Wszystkie reguły w jednym miejscu</span></button></div>';
+  app.innerHTML=h;}
+
+var TOOLLINK={3:'check',4:'check',5:'check',6:'sito',7:'factor',8:'nwd',9:'nwd'};
+function chapter(id){setNav('map');
+  if(id===10){app.innerHTML=top('Pojedynek','#/')+'<div class="card center"><div class="big-emo">🧥</div><h2>Pan Reszta wyzywa cię na pojedynek!</h2><p>15 zadań ze wszystkich rozdziałów. Jeśli rozwiążesz co najmniej 12, zdobędziesz <b>dziesiąty klucz</b>, a na końcu dostaniesz listę tematów do powtórki.</p>'+(P.boss?'<p class="muted">Ostatni wynik: '+P.boss.score+'/15</p>':'')+'<button class="btn gold block" data-act="startBoss">⚔️ Zaczynamy pojedynek</button></div>';return;}
+  var ch=CH[id-1];if(!ch)return go('#/');
+  var h=top(ch.emo+' '+ch.title,'#/')+'<div class="card"><div class="zerek"><div class="av">0️⃣</div><div>'+ch.story+'</div></div><h3>📜 Klucz '+ch.id+': zasada</h3>'+ch.rule
+  +(TOOLLINK[id]?'<button class="btn secondary block" data-go="#/tool/'+TOOLLINK[id]+'" style="margin-top:6px">🧰 Otwórz narzędzie</button>':'')+'</div>'
+  +'<div class="card center">'+(P.keys[id]?'<p>🔑 Masz już ten klucz! Możesz ćwiczyć dalej – zadania są za każdym razem inne.</p>':'<p>Rozwiąż co najmniej <b>8 z 10</b> zadań, aby zdobyć klucz.</p>')+(P.best[id]!=null?'<p class="muted">Najlepszy wynik: '+P.best[id]+'/10</p>':'')+'<button class="btn gold block" data-act="start" data-id="'+id+'">▶️ Ćwiczę (10 zadań)</button></div>';
+  app.innerHTML=h;}
+
+function startQuiz(id){var tasks=id===10?buildBoss():buildSession(CH[id-1]);S.quiz={id:id,tasks:tasks,i:0,score:0,wrong:[]};resetTask();go('#/quiz');}
+function resetTask(){S.entry='';S.sel=[];S.answered=false;S.lastOk=null;}
+function cur(){return S.quiz.tasks[S.quiz.i];}
+function quiz(){setNav('map');var Q=S.quiz,t=cur(),n=Q.tasks.length;var title=Q.id===10?'🧥 Pojedynek':CH[Q.id-1].emo+' '+CH[Q.id-1].title;
+  var h=top(title,Q.id===10?'#/ch/10':'#/ch/'+Q.id)+'<div class="card"><div class="topinfo"><span>Zadanie '+(Q.i+1)+' z '+n+'</span><span>✅ '+Q.score+'</span></div><div class="bar"><div style="width:'+(Q.i/n*100)+'%"></div></div>'+(Q.id===10?'<div class="muted" style="font-size:.85rem">Temat: '+esc(t.topic)+'</div>':'')+'<div class="q">'+t.q+'</div>'+answerArea(t)+feedback(t)+'</div>';
+  app.innerHTML=h;}
+function answerArea(t){var h='';
+  if(t.kind==='tf'||t.kind==='choice'||t.kind==='multi'){var g=t.grid||(t.kind==='tf'?'grid2':(t.options.length>4?'grid2':''));h+=(t.kind==='multi'?'<div class="muted" style="margin-bottom:6px">Możesz zaznaczyć kilka odpowiedzi.</div>':'')+'<div class="opts '+g+'">';
+    t.options.forEach(function(o,i){var c='opt';var sel=S.sel.indexOf(i)>=0;if(sel)c+=' sel';if(S.answered){var right=t.kind==='multi'?t.canonical.indexOf(i)>=0:i===t.canonical;if(right)c+=' right';else if(sel)c+=' wrong';}
+      h+='<button class="'+c+'" data-act="opt" data-i="'+i+'"'+(S.answered?' disabled':'')+'>'+esc(o)+'</button>';});h+='</div>';}
+  else{var sep=t.kind==='list'?',':t.kind==='fact'?'×':'';var hint=t.kind==='list'?'np. 3, 6, 9':t.kind==='fact'?'np. 2 × 2 × 3':'wpisz liczbę';
+    h+='<div class="display'+(S.entry?'':' empty')+'" id="disp">'+(S.entry?esc(S.entry.replace(/×/g,' × ').replace(/,/g,', ')):hint)+'</div>';
+    if(!S.answered){h+='<div class="pad">';[1,2,3,4,5,6,7,8,9].forEach(function(d){h+='<button data-act="key" data-k="'+d+'">'+d+'</button>';});
+      h+=(sep?'<button data-act="key" data-k="'+sep+'">'+sep+'</button>':'<button data-act="key" data-k="C">C</button>')+'<button data-act="key" data-k="0">0</button><button data-act="key" data-k="B" aria-label="Usuń">⌫</button></div>';}}
+  if(!S.answered)h+='<button class="btn block" style="margin-top:12px" data-act="check">Sprawdź</button>';
+  return h;}
+function parseResp(t){if(t.kind==='tf'||t.kind==='choice')return S.sel.length?S.sel[0]:null;if(t.kind==='multi')return S.sel.slice().sort(function(a,b){return a-b;});
+  if(t.kind==='num'){return S.entry===''?null:Number(S.entry);}
+  var sep=t.kind==='list'?',':'×';var parts=S.entry.split(sep).filter(function(x){return x!=='';}).map(Number);return parts.length?parts:null;}
+function canonText(t){if(t.kind==='tf'||t.kind==='choice')return t.options[t.canonical];if(t.kind==='multi')return t.canonical.length?t.canonical.map(function(i){return t.options[i];}).join(', '):'żadna';if(t.kind==='fact')return C.prodStr(t.canonical);if(t.kind==='list')return t.canonical.join(', ');return C.fmt(t.canonical);}
+function feedback(t){if(!S.answered)return '';var ok=S.lastOk;var last=S.quiz.i===S.quiz.tasks.length-1;
+  return '<div class="fb '+(ok?'ok':'bad')+'"><h4>'+(ok?'✅ '+R.pick(OKMSG):'❌ '+R.pick(BADMSG))+'</h4>'+(ok?'':'<p><b>Poprawna odpowiedź:</b> '+esc(canonText(t))+(t.meta&&t.meta.f==='open'?' (to tylko przykład)':'')+'</p>')+'<p>'+t.explain+'</p></div><button class="btn gold block" style="margin-top:12px" data-act="next">'+(last?'Zobacz wynik 🏁':'Dalej ➜')+'</button>';}
+function doCheck(){var t=cur();var r=parseResp(t);if(r===null||(t.kind==='multi'&&false)){toast(t.kind==='tf'||t.kind==='choice'?'Wybierz odpowiedź':'Wpisz odpowiedź');return;}
+  if(t.kind==='multi'&&!r.length&&t.canonical.length){toast('Zaznacz przynajmniej jedną odpowiedź');return;}
+  var ok=t.check(r);S.answered=true;S.lastOk=ok;if(ok)S.quiz.score++;else S.quiz.wrong.push(t);quiz();}
+function next(){var Q=S.quiz;if(Q.i<Q.tasks.length-1){Q.i++;resetTask();quiz();}else finish();}
+function finish(){var Q=S.quiz,n=Q.tasks.length,need=Math.ceil(n*0.8);Q.need=need;Q.newKey=false;
+  if(Q.id===10){P.boss={score:Q.score};}else{P.best[Q.id]=Math.max(P.best[Q.id]||0,Q.score);}
+  if(Q.score>=need&&!P.keys[Q.id]){P.keys[Q.id]=true;Q.newKey=true;}save();go('#/result');}
+function result(){setNav('map');var Q=S.quiz,n=Q.tasks.length;var won=Q.score>=Q.need;
+  var h=top('Wynik','#/')+'<div class="card center"><div class="big-emo">'+(won?'🏆':'💪')+'</div><h2>'+Q.score+' / '+n+'</h2>';
+  if(won)h+='<p>'+(Q.newKey?'<b>Zdobywasz klucz '+Q.id+'! 🔑</b> ':'Świetny wynik! ')+(Q.id===10?'Pan Reszta rozsypał się w okruchy. Reszta zero!':'Pan Reszta ucieka z pustymi rękami.')+'</p>';
+  else h+='<p>Do klucza potrzeba <b>'+Q.need+'</b> poprawnych. Zabrakło niewiele – zadania będą inne, spróbuj jeszcze raz!</p>';
+  if(nKeys()===10&&Q.newKey)h+='<p>🎉 <b>Masz wszystkie 10 kluczy!</b> Kraina Liczb jest bezpieczna. Zajrzyj do Wielkiej Księgi Zasad.</p>';
+  h+='</div>';
+  if(Q.wrong.length){var topics={};Q.wrong.forEach(function(t){var k=t.chapter;topics[k]=(topics[k]||0)+1;});
+    h+='<div class="card"><h3>📚 '+(Q.id===10?'Tematy do powtórki':'Do powtórki')+'</h3><ul class="rev">';
+    Object.keys(topics).sort(function(a,b){return a-b;}).forEach(function(k){var ch=CH[k-1];h+='<li><a href="#/ch/'+k+'">'+ch.emo+' '+ch.topic+'</a> – błędów: '+topics[k]+'</li>';});h+='</ul></div>';}
+  else h+='<div class="card center"><p>Bezbłędnie! 🌟</p></div>';
+  h+='<div class="row"><button class="btn gold" data-act="start" data-id="'+Q.id+'">🔄 Jeszcze raz</button><button class="btn secondary" data-go="#/">🗺️ Mapa</button></div>';
+  app.innerHTML=h;}
+
+// ===== Narzędzia =====
+function tools(){setNav('tools');app.innerHTML=top('Narzędzia')+'<div class="tools">'
+  +'<button class="place" data-go="#/tool/sito"><span class="emo">🧺</span><span class="tt">Sito Eratostenesa</span><span class="st">Skreślaj wielokrotności i znajdź liczby pierwsze do 100</span></button>'
+  +'<button class="place" data-go="#/tool/check"><span class="emo">🔍</span><span class="tt">Sprawdzacz podzielności</span><span class="st">Wpisz liczbę – zobacz, która cecha działa i dlaczego</span></button>'
+  +'<button class="place" data-go="#/tool/factor"><span class="emo">🔨</span><span class="tt">Rozkład na czynniki</span><span class="st">Metoda kreski krok po kroku</span></button>'
+  +'<button class="place" data-go="#/tool/nwd"><span class="emo">⚖️</span><span class="tt">NWD i NWW</span><span class="st">Oba sposoby: wypisywanie i rozkład</span></button></div>';}
+function tool(k){setNav('tools');if(k==='sito')return sieve();if(k==='check')return checker();if(k==='factor')return factor();if(k==='nwd')return nwdTool();go('#/tools');}
+function newSieve(){S.sieve={x:{},p:{},msg:'Dotknij liczby <b>1</b>, żeby ją skreślić, albo naciśnij „Następny krok”.',flash:[]};}
+function smallestFree(){for(var n=2;n<=100;n++)if(!S.sieve.x[n]&&!S.sieve.p[n])return n;return null;}
+function sieveTap(n){var s=S.sieve;s.flash=[];
+  if(n===1){if(s.x[1])s.msg='1 już skreślona.';else{s.x[1]='1';s.msg='Skreślamy <b>1</b> – ma tylko jeden dzielnik, więc nie jest ani pierwsza, ani złożona. Teraz dotknij <b>2</b>.';s.flash=[1];}return;}
+  if(s.p[n]){s.msg=n+' to liczba pierwsza (zaznaczona na złoto).';return;}
+  if(s.x[n]){s.msg=n+' jest już skreślona – to wielokrotność liczby <b>'+s.x[n]+'</b>: '+n+' = '+s.x[n]+' · '+(n/s.x[n])+'.';return;}
+  if(!C.isPrime(n)){var f=C.factorize(n);s.msg=n+' nie jest pierwsza: '+n+' = '+f[0]+' · '+(n/f[0])+'. Zacznij od najmniejszej nieskreślonej liczby ('+smallestFree()+').';return;}
+  s.p[n]=1;var cr=[];for(var m=2*n;m<=100;m+=n)if(!s.x[m]){s.x[m]=n;cr.push(m);}s.flash=cr;
+  if(!s.x[1]){s.x[1]='1';}
+  if(n*n>100){s.msg='<b>'+n+'</b> jest pierwsza. Ponieważ '+n+' · '+n+' = '+n*n+' > 100, wszystkie jej mniejsze wielokrotności są już skreślone. Każda nieskreślona liczba jest pierwsza! Naciśnij „Pokaż wszystkie pierwsze”.';}
+  else s.msg='<b>'+n+'</b> jest pierwsza – zostawiamy ją. Skreślamy jej wielokrotności'+(cr.length?': '+cr.slice(0,12).join(', ')+(cr.length>12?', …':'')+' (razem '+cr.length+').':' – wszystkie już skreślone.');}
+function sieve(){if(!S.sieve)newSieve();var s=S.sieve;var h=top('🧺 Sito Eratostenesa','#/tools')+'<div class="card"><p class="muted" style="margin:0">Zasada: skreśl 1. Weź najmniejszą nieskreśloną liczbę – jest pierwsza. Skreśl jej wielokrotności. Powtarzaj.</p><div class="sieve">';
+  for(var n=1;n<=100;n++){var c=s.p[n]?'p':s.x[n]?'x':'';if(s.flash.indexOf(n)>=0)c+=' flash';h+='<button class="'+c+'" data-act="sv" data-n="'+n+'">'+n+'</button>';}
+  var cnt=Object.keys(s.p).length;h+='</div><div class="zerek"><div class="av">0️⃣</div><div>'+s.msg+'</div></div><div class="topinfo"><span>Znalezione liczby pierwsze: '+cnt+'</span><span>(do 100 jest ich 25)</span></div><div class="row" style="margin-top:10px"><button class="btn" data-act="svNext">Następny krok</button><button class="btn secondary" data-act="svAll">Pokaż wszystkie pierwsze</button><button class="btn secondary" data-act="svReset">Od nowa</button></div></div>';
+  app.innerHTML=h;}
+function checker(){var n=S.chk;var h=top('🔍 Sprawdzacz podzielności','#/tools')+'<div class="card"><label for="chkin"><b>Wpisz liczbę naturalną:</b></label><input id="chkin" class="num" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="9" value="'+n+'"><div id="chkout"></div></div>';app.innerHTML=h;
+  var inp=document.getElementById('chkin');inp.oninput=function(){var v=inp.value.replace(/\D/g,'');if(v!==inp.value)inp.value=v;S.chk=v===''?'':Number(v);chkOut();};chkOut();}
+function chkOut(){var n=S.chk,o=document.getElementById('chkout');if(n===''||n<1){o.innerHTML='<p class="muted">Wpisz liczbę większą od zera.</p>';return;}
+  var h='<div class="muted" style="margin:8px 0">Suma cyfr: '+C.digits(n).join(' + ')+' = '+C.digitSum(n)+'</div>';
+  [2,3,4,5,6,9,10,15,25,100,1000].forEach(function(d){var r=C.rule(n,d);h+='<div class="chk"><div class="ic">'+(r.ok?'✅':'❌')+'</div><div><b>Przez '+d+': '+(r.ok?'TAK':'NIE')+'</b><br><span class="muted">'+r.text+'</span></div></div>';});
+  var pr=C.isPrime(n);h+='<div class="rule" style="margin-top:10px">'+(n===1?'1 nie jest ani pierwsza, ani złożona.':pr?'<b>'+C.fmt(n)+' jest liczbą pierwszą</b> (dzielniki: 1 i '+C.fmt(n)+').':'<b>'+C.fmt(n)+' jest liczbą złożoną.</b> Rozkład: '+C.prodStr(C.factorize(n))+'.')+'</div>';
+  if(n<=100000){var d=C.divisors(n);h+='<div><b>Dzielniki ('+d.length+'):</b><div class="chips">'+d.map(function(x){return '<span class="chip">'+C.fmt(x)+'</span>';}).join('')+'</div></div>';}
+  o.innerHTML=h;}
+function why(cur,p){if(cur===p)return cur+' to liczba pierwsza';if(p===2)return 'parzysta (koniec '+String(cur).slice(-1)+') → przez 2';if(p===3)return 'suma cyfr '+C.digitSum(cur)+' → przez 3';if(p===5)return 'koniec '+String(cur).slice(-1)+' → przez 5';return 'nie dzieli się przez mniejsze liczby pierwsze → przez '+p;}
+function factor(){var F=S.fact,n=F.n;var h=top('🔨 Rozkład na czynniki','#/tools')+'<div class="card"><label for="fin"><b>Liczba do rozłożenia (2 – 1 000 000):</b></label><input id="fin" class="num" type="text" inputmode="numeric" maxlength="7" value="'+n+'"><div class="row" style="margin-top:10px"><button class="btn" data-act="fStep">Następny krok</button><button class="btn secondary" data-act="fAll">Pokaż wszystko</button></div><div id="fout"></div></div>';app.innerHTML=h;
+  var inp=document.getElementById('fin');inp.oninput=function(){var v=inp.value.replace(/\D/g,'');inp.value=v;S.fact={n:Number(v),step:0};fOut();};fOut();}
+function fOut(){var F=S.fact,n=F.n,o=document.getElementById('fout');if(!(n>=2&&n<=1000000)){o.innerHTML='<p class="muted">Wpisz liczbę od 2 do 1 000 000.</p>';return;}
+  var f=C.factorize(n),cur=n,rows='';var k=Math.min(F.step,f.length);
+  for(var i=0;i<k;i++){rows+='<tr><td>'+C.fmt(cur)+'</td><td>'+f[i]+'</td><td class="why">'+why(cur,f[i])+'</td></tr>';cur/=f[i];}
+  rows+='<tr><td>'+C.fmt(cur)+'</td><td></td><td class="why">'+(cur===1?'koniec – została jedynka':'')+'</td></tr>';
+  var h='<table class="split">'+rows+'</table>';
+  if(k===f.length){h+=f.length===1?'<div class="rule"><b>'+C.fmt(n)+' jest liczbą pierwszą</b> – nie da się jej rozłożyć.</div>':'<div class="rule"><b>'+C.fmt(n)+' = '+C.prodStr(f)+'</b><br>Zapis potęgowy: <b>'+C.powStr(f)+'</b></div><div class="ex">Sprawdzenie: '+C.prodStr(f)+' = '+C.fmt(f.reduce(function(a,b){return a*b;},1))+' ✓</div>';}
+  else h+='<p class="muted">Naciśnij „Następny krok”.</p>';o.innerHTML=h;}
+function nwdTool(){var a=S.pair[0],b=S.pair[1];var h=top('⚖️ NWD i NWW','#/tools')+'<div class="card"><div class="row"><div style="flex:1"><label for="na"><b>Liczba a</b></label><input id="na" class="num" type="text" inputmode="numeric" maxlength="5" value="'+a+'"></div><div style="flex:1"><label for="nb"><b>Liczba b</b></label><input id="nb" class="num" type="text" inputmode="numeric" maxlength="5" value="'+b+'"></div></div><div id="nout"></div></div>';app.innerHTML=h;
+  ['na','nb'].forEach(function(id,j){var inp=document.getElementById(id);inp.oninput=function(){var v=inp.value.replace(/\D/g,'');inp.value=v;S.pair[j]=Number(v);nOut();};});nOut();}
+function nOut(){var a=S.pair[0],b=S.pair[1],o=document.getElementById('nout');if(!(a>=1&&b>=1&&a<=10000&&b<=10000)){o.innerHTML='<p class="muted">Wpisz dwie liczby od 1 do 10 000.</p>';return;}
+  var g=C.gcd(a,b),l=C.lcm(a,b),h='';
+  h+='<h3>Sposób 1: wypisywanie</h3>';
+  if(a<=300&&b<=300){var da=C.divisors(a),db=C.divisors(b);function chips(arr,other){return '<div class="chips">'+arr.map(function(x){return '<span class="chip'+(other.indexOf(x)>=0?(x===g?' hl':''):'')+'"'+(other.indexOf(x)>=0&&x!==g?' style="background:#c9f2d6"':'')+'>'+x+'</span>';}).join('')+'</div>';}
+    h+='<div>Dzielniki '+a+':'+chips(da,db)+'Dzielniki '+b+':'+chips(db,da)+'<p>Wspólne (zielone): '+da.filter(function(x){return db.indexOf(x)>=0;}).join(', ')+'. Największy: <b>NWD = '+g+'</b></p></div>';}
+  else h+='<p class="muted">Liczby są duże – wypisywanie dzielników trwałoby długo. Użyj rozkładu (sposób 2).</p>';
+  var big=Math.max(a,b),small=Math.min(a,b);if(l/big<=20){var ms=[];for(var m=big;m<=l;m+=big)ms.push(m);h+='<div>Wielokrotności '+big+': <div class="chips">'+ms.map(function(x){return '<span class="chip'+(x===l?' hl':'')+'">'+x+(x%small===0?' ✓':'')+'</span>';}).join('')+'</div><p>Pierwsza, która dzieli się przez '+small+': <b>NWW = '+l+'</b></p></div>';}
+  else h+='<p class="muted">NWW jest daleko ('+l/big+'. wielokrotność '+big+') – lepiej sposobem 2.</p>';
+  var fa=a>1?C.factorize(a):[],fb=b>1?C.factorize(b):[],cm=C.multisetCommon(fa,fb),un=C.multisetUnion(fa,fb);
+  h+='<h3>Sposób 2: rozkład na czynniki</h3><div class="ex">'+a+' = '+(fa.length?C.prodStr(fa):'1')+'<br>'+b+' = '+(fb.length?C.prodStr(fb):'1')+'</div>';
+  h+='<div class="rule"><b>NWD</b> – mnożymy czynniki <b>wspólne</b>: '+(cm.length?C.prodStr(cm)+' = '+g:'brak wspólnych czynników → NWD = 1 (liczby względnie pierwsze)')+'</div>';
+  h+='<div class="rule"><b>NWW</b> – bierzemy każdy czynnik tyle razy, ile najwięcej występuje w którejś liczbie: '+(un.length?C.prodStr(un):'1')+' = '+C.fmt(l)+'</div>';
+  h+='<div class="ex">Sprawdzenie: NWD · NWW = '+g+' · '+C.fmt(l)+' = '+C.fmt(g*l)+', a '+a+' · '+b+' = '+C.fmt(a*b)+' ✓</div>';o.innerHTML=h;}
+
+// ===== Księga =====
+function book(){setNav('book');var all=nKeys()===10;var h=top('📖 Wielka Księga Zasad')+'<div class="card center">'+(all?'<div class="big-emo">🎉</div><p><b>Masz wszystkie 10 kluczy!</b> Jesteś gotowy na sprawdzian 30 października. Powodzenia, Mikołaj!</p>':'<p>Masz '+nKeys()+' z 10 kluczy. Księgę możesz czytać zawsze – to ściąga do powtórki przed sprawdzianem.</p>')+keysRow()+'</div>';
+  CH.forEach(function(ch){h+='<div class="card"><details'+(ch.id===1?' open':'')+'><summary>'+(P.keys[ch.id]?'🔑':'🔒')+' Strona '+ch.id+'. '+ch.topic+'</summary>'+ch.rule+'</details></div>';});
+  h+='<div class="card"><details><summary>🧥 Strona 10. NWD czy NWW?</summary><div class="rule">Dzielimy na <b>równe części</b>, jak najwięcej paczek, jak najdłuższe kawałki → <b>NWD</b> (wynik nie większy od danych liczb).<br>Coś się <b>powtarza</b> i pytamy, kiedy znów <b>razem</b> → <b>NWW</b> (wynik nie mniejszy od danych liczb).</div><div class="rule">Zawsze sprawdzaj: rozkład – mnożeniem; NWD – czy obie liczby się przez nie dzielą; NWW – czy dzieli się przez obie liczby. Podkreślaj w poleceniu: „mniejsze od”, „co najmniej”, „dwucyfrowe”, „wszystkie”.</div></details></div>';
+  h+='<div class="card center"><button class="btn secondary" data-act="reset">Wyzeruj postęp</button></div>';app.innerHTML=h;}
+
+// ===== zdarzenia =====
+app.addEventListener('click',function(e){var el=e.target.closest('[data-go],[data-act]');if(!el)return;
+  if(el.dataset.go){go(el.dataset.go);return;}var a=el.dataset.act;
+  if(a==='start')startQuiz(+el.dataset.id);
+  else if(a==='startBoss')startQuiz(10);
+  else if(a==='opt'){if(S.answered)return;var t=cur(),i=+el.dataset.i;if(t.kind==='multi'){var k=S.sel.indexOf(i);if(k>=0)S.sel.splice(k,1);else S.sel.push(i);}else S.sel=[i];quiz();}
+  else if(a==='key')pressKey(el.dataset.k);
+  else if(a==='check')doCheck();
+  else if(a==='next')next();
+  else if(a==='sv'){sieveTap(+el.dataset.n);sieve();}
+  else if(a==='svNext'){var s=S.sieve;if(!s.x[1])sieveTap(1);else{var n=smallestFree();if(n===null)s.msg='Gotowe! Wszystkie liczby są skreślone albo złote.';else sieveTap(n);}sieve();}
+  else if(a==='svAll'){var s2=S.sieve;s2.x[1]='1';for(var n2=2;n2<=100;n2++){if(C.isPrime(n2))s2.p[n2]=1;else{var f=C.factorize(n2);s2.x[n2]=f[0];}}s2.flash=[];s2.msg='Oto wszystkie 25 liczb pierwszych mniejszych od 100: 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97.';sieve();}
+  else if(a==='svReset'){newSieve();sieve();}
+  else if(a==='fStep'){S.fact.step++;fOut();}
+  else if(a==='fAll'){S.fact.step=99;fOut();}
+  else if(a==='reset'){if(confirm('Na pewno wyzerować wszystkie klucze i wyniki?')){P={keys:{},best:{},boss:null};save();book();toast('Postęp wyzerowany');}}
+});
+function pressKey(k){if(S.answered)return;var t=cur();if(k==='B')S.entry=S.entry.slice(0,-1);else if(k==='C')S.entry='';else if(k===','||k==='×'){if(S.entry&&!/[,×]$/.test(S.entry))S.entry+=k;}else{if(S.entry.replace(/[,×]/g,'').length<40){if(t.kind==='num'&&S.entry.length>=7)return;S.entry+=k;}}
+  var d=document.getElementById('disp');if(d){var sep=t.kind==='list'?',':t.kind==='fact'?'×':'';d.className='display'+(S.entry?'':' empty');d.textContent=S.entry?S.entry.replace(/×/g,' × ').replace(/,/g,', '):(t.kind==='list'?'np. 3, 6, 9':t.kind==='fact'?'np. 2 × 2 × 3':'wpisz liczbę');}}
+document.addEventListener('keydown',function(e){if(!(location.hash==='#/quiz'&&S.quiz))return;if(e.target&&e.target.tagName==='INPUT')return;var t=cur();
+  if(e.key==='Enter'){e.preventDefault();if(S.answered)next();else doCheck();return;}
+  if(S.answered)return;
+  if(t.kind==='num'||t.kind==='list'||t.kind==='fact'){if(/^[0-9]$/.test(e.key))pressKey(e.key);else if(e.key==='Backspace'){e.preventDefault();pressKey('B');}else if((e.key===','||e.key===' '||e.key===';')&&t.kind==='list')pressKey(',');else if((e.key==='*'||e.key==='x'||e.key==='X'||e.key===' '||e.key==='.')&&t.kind==='fact')pressKey('×');}});
+window.KL={S:S,P:function(){return P;},cur:function(){return S.quiz&&cur();},pressKey:pressKey,go:go};
+render();
+})();
+
+</script>
+</body>
+</html>
