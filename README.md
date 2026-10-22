@@ -7,3 +7,5 @@ Przygoda z Zerkiem: mapa z 10 kluczami, zadania losowane za każdym razem od now
 **Zagraj:** https://gtkwsk.github.io/kraina-liczb/
 
 Działa w przeglądarce na telefonie, tablecie i komputerze. Cała aplikacja to jeden plik `index.html` – po pobraniu działa także bez internetu. Postęp zapisuje się w przeglądarce.
+
+© 2026 Robert Gutkowski. Wszelkie prawa zastrzeżone.

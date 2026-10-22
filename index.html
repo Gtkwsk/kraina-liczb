@@ -1,7 +1,9 @@
 <!DOCTYPE html>
+<!-- Kraina Liczb – © 2026 Robert Gutkowski. Wszelkie prawa zastrzeżone. -->
 <html lang="pl">
 <head>
 <meta charset="utf-8">
+<meta name="author" content="Robert Gutkowski">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#5a3fd6">
 <title>Kraina Liczb – Własności liczb naturalnych</title>
@@ -71,6 +73,7 @@ header.top h1{font-size:1.25rem;margin:0;flex:1;line-height:1.2}
 .bar{height:10px;background:#eee;border-radius:999px;overflow:hidden;margin:6px 0 12px}
 .bar>div{height:100%;background:linear-gradient(90deg,var(--bg1),var(--bg2));transition:width .3s}
 .topinfo{display:flex;justify-content:space-between;font-size:.9rem;color:var(--muted);font-weight:700}
+footer.copy{text-align:center;font-size:.75rem;color:rgba(255,255,255,.85);margin:18px 0 4px;letter-spacing:.02em}
 nav.bottom{position:fixed;left:0;right:0;bottom:0;background:#fff;display:flex;justify-content:center;gap:4px;padding:6px 6px calc(6px + env(safe-area-inset-bottom));box-shadow:0 -4px 16px rgba(0,0,0,.12);z-index:10}
 nav.bottom button{flex:1;max-width:190px;min-height:56px;border:none;background:none;font:inherit;font-size:.85rem;font-weight:700;color:var(--muted);border-radius:12px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center}
 nav.bottom button span{font-size:1.4rem}
@@ -376,6 +379,7 @@ function cleanName(s){return String(s).replace(/[\u0000-\u001f\u007f]/g,'').repl
 function save(){try{localStorage.setItem(STORE_KEY,JSON.stringify(P));}catch(e){}}
 var app=document.getElementById('app');
 var NAME_MAX=20;
+var FOOT='<footer class="copy">© 2026 Robert Gutkowski</footer>';
 function nm(){return P.name?esc(P.name):'';}
 function withName(s){return P.name?s+', '+nm():s;}
 var S={quiz:null,entry:'',sel:[],answered:false,sieve:null,fact:{n:360,step:0},chk:2457,pair:[24,36]};
@@ -409,7 +413,7 @@ function home(){setNav('map');var k=nKeys();
   CH.forEach(function(ch){var b=P.best[ch.id];h+='<button class="place'+(P.keys[ch.id]?' done':'')+'" data-go="#/ch/'+ch.id+'"><span class="emo">'+ch.emo+'</span><span class="nr">Rozdział '+ch.id+'</span><span class="tt">'+ch.title+'</span><span class="st">'+(b!=null?'Najlepszy wynik: '+b+'/10':'Jeszcze nie odwiedzone')+'</span></button>';});
   h+='<button class="place boss'+(P.keys[10]?' done':'')+'" data-go="#/ch/10"><span class="emo">🧥⚔️</span><span class="nr">Rozdział 10</span><span class="tt">Pojedynek z Panem Resztą</span><span class="st">'+(P.boss?'Ostatni wynik: '+P.boss.score+'/15':'15 zadań ze wszystkiego')+'</span></button>';
   h+='<button class="place epi" data-go="#/book"><span class="emo">📖</span><span class="nr">Epilog</span><span class="tt">Wielka Księga Zasad</span><span class="st">Wszystkie reguły w jednym miejscu</span></button></div>';
-  app.innerHTML=h;}
+  h+=FOOT;app.innerHTML=h;}
 
 var TOOLLINK={3:'check',4:'check',5:'check',6:'sito',7:'factor',8:'nwd',9:'nwd'};
 function chapter(id){setNav('map');
@@ -522,9 +526,9 @@ function nOut(){var a=S.pair[0],b=S.pair[1],o=document.getElementById('nout');if
 function book(){setNav('book');var all=nKeys()===10;var h=top('📖 Wielka Księga Zasad')+'<div class="card center">'+(all?'<div class="big-emo">🎉</div><p><b>Masz wszystkie 10 kluczy!</b> Sprawdzian ci niestraszny. '+withName('Powodzenia')+'!</p>':'<p>Masz '+nKeys()+' z 10 kluczy. Księgę możesz czytać zawsze – to ściąga do powtórki przed sprawdzianem.</p>')+keysRow()+'</div>';
   CH.forEach(function(ch){h+='<div class="card"><details'+(ch.id===1?' open':'')+'><summary>'+(P.keys[ch.id]?'🔑':'🔒')+' Strona '+ch.id+'. '+ch.topic+'</summary>'+ch.rule+'</details></div>';});
   h+='<div class="card"><details><summary>🧥 Strona 10. NWD czy NWW?</summary><div class="rule">Dzielimy na <b>równe części</b>, jak najwięcej paczek, jak najdłuższe kawałki → <b>NWD</b> (wynik nie większy od danych liczb).<br>Coś się <b>powtarza</b> i pytamy, kiedy znów <b>razem</b> → <b>NWW</b> (wynik nie mniejszy od danych liczb).</div><div class="rule">Zawsze sprawdzaj: rozkład – mnożeniem; NWD – czy obie liczby się przez nie dzielą; NWW – czy dzieli się przez obie liczby. Podkreślaj w poleceniu: „mniejsze od”, „co najmniej”, „dwucyfrowe”, „wszystkie”.</div></details></div>';
-  h+='<div class="card center"><p class="muted">Gracz: <b>'+(P.name?nm():'bez imienia')+'</b></p><div class="row"><button class="btn secondary" data-go="#/imie">✏️ Zmień imię</button><button class="btn secondary" data-act="reset">Wyzeruj postęp</button></div></div>';app.innerHTML=h;}
+  h+='<div class="card center"><p class="muted">Gracz: <b>'+(P.name?nm():'bez imienia')+'</b></p><div class="row"><button class="btn secondary" data-go="#/imie">✏️ Zmień imię</button><button class="btn secondary" data-act="reset">Wyzeruj postęp</button></div></div>';h+=FOOT;app.innerHTML=h;}
 function nameScreen(){setNav('book');var first=P.name===null;app.innerHTML='<header class="top"><span style="font-size:1.8rem">0️⃣</span><h1>Kraina Liczb</h1></header><div class="card center"><div class="big-emo">0️⃣👋</div><h2>Jak masz na imię?</h2><div class="zerek" style="text-align:left"><div class="av">0️⃣</div><div><b>Zerek:</b> '+(first?'Cześć! Jestem Zerek, mała okrągła cyferka zero. Razem zbierzemy 10 kluczy wiedzy i pokonamy Pana Resztę. Najpierw powiedz mi, jak się do ciebie zwracać.':'Chcesz zmienić imię? Klucze i wyniki zostaną.')+'</div></div><form id="nameform" autocomplete="off"><label for="namein" class="muted">Wpisz swoje imię (do '+NAME_MAX+' znaków)</label><input id="namein" class="num" type="text" maxlength="'+NAME_MAX+'" value="'+(P.name?nm():'')+'" placeholder="np. Ola, Kuba" style="text-align:center;margin:8px 0 12px"><button class="btn gold block" type="submit">Ruszamy! 🚀</button></form><button class="btn secondary block" style="margin-top:10px" data-act="skipName">'+(first?'Pomiń':'Anuluj')+'</button></div>';
-  var f=document.getElementById('nameform');f.onsubmit=function(e){e.preventDefault();var v=cleanName(document.getElementById('namein').value);P.name=v;save();toast(v?withName('Miło cię poznać')+'!':'Gramy bez imienia – też dobrze!');go('#/');};}
+  var f=document.getElementById('nameform');f.onsubmit=function(e){e.preventDefault();var v=cleanName(document.getElementById('namein').value);P.name=v;save();toast(v?'Miło cię poznać, '+v+'!':'Gramy bez imienia – też dobrze!');go('#/');};}
 
 // ===== zdarzenia =====
 app.addEventListener('click',function(e){var el=e.target.closest('[data-go],[data-act]');if(!el)return;
