@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#5b3fd6">
+<meta name="theme-color" content="#5a3fd6">
 <title>Kraina Liczb – Własności liczb naturalnych</title>
 <style>
-:root{--bg1:#6a4cff;--bg2:#00c2d1;--card:#fff;--ink:#22223b;--muted:#6b6b85;--ok:#1aa64b;--bad:#e5484d;--gold:#ffb703;--violet:#5b3fd6;--soft:#f3f0ff;--r:18px}
+:root{--bg1:#6a4cff;--bg2:#00c2d1;--card:#fff;--ink:#22223b;--muted:#6b6b85;--ok:#1aa64b;--bad:#e5484d;--gold:#ffb703;--violet:#5a3fd6;--soft:#f3f0ff;--r:18px}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0}
 body{font-family:"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color:var(--ink);background:linear-gradient(160deg,var(--bg1),var(--bg2));min-height:100vh;font-size:18px;line-height:1.45}
@@ -308,7 +308,7 @@ function nwwPair(){for(;;){var a=R.i(2,30),b=R.i(2,30);if(a===b)continue;if(C.lc
 function nwwExpl(a,b){var fa=C.factorize(a),fb=C.factorize(b),u=C.multisetUnion(fa,fb),l=C.lcm(a,b);return a+' = '+C.prodStr(fa)+', '+b+' = '+C.prodStr(fb)+'. Bierzemy każdy czynnik tyle razy, ile najwięcej występuje: '+C.prodStr(u)+' = '+l+'.';}
 G.nww = function(){var p=nwwPair();var a=p[0],b=p[1];return T.num('Oblicz <b>NWW('+a+', '+b+')</b>.',C.lcm(a,b),nwwExpl(a,b),{f:'lcm',a:a,b:b});};
 G.nwwWord = function(){var p;do{p=nwwPair();}while(C.gcd(p[0],p[1])<2&&R.coin());var a=p[0],b=p[1],l=C.lcm(a,b);var t=R.i(0,2);var q;
-  if(t===0)q='Z przystanku w Dębicy jeden autobus odjeżdża co '+pl(a,'minuty','minut')+', a drugi co '+pl(b,'minuty','minut')+'. Przed chwilą odjechały razem. Po ilu minutach <b>znowu odjadą jednocześnie</b>?';
+  if(t===0)q='Z przystanku na rynku jeden autobus odjeżdża co '+pl(a,'minuty','minut')+', a drugi co '+pl(b,'minuty','minut')+'. Przed chwilą odjechały razem. Po ilu minutach <b>znowu odjadą jednocześnie</b>?';
   else if(t===1)q='Jedna latarnia morska błyska co '+pl(a,'sekundy','sekund')+', druga co '+pl(b,'sekundy','sekund')+'. Właśnie błysnęły razem. Po ilu sekundach <b>najwcześniej</b> znów błysną razem?';
   else q='Ania odwiedza babcię co '+a+' dni, a Kasia co '+b+' dni. Dziś spotkały się u babci. Za ile dni <b>znowu spotkają się</b> u babci?';
   return T.num(q,l,'Coś powtarza się i pytamy, kiedy znów razem → NWW. '+nwwExpl(a,b),{f:'lcm',a:a,b:b});};
@@ -371,9 +371,13 @@ if(typeof module!=='undefined')module.exports={C:C,R:R,T:T,G:G,CH:CH,BOSS:BOSS,F
 (function(){
 var STORE_KEY='krainaLiczb.v1';
 var P=load();
-function load(){try{var s=JSON.parse(localStorage.getItem(STORE_KEY)||'{}');return {keys:s.keys||{},best:s.best||{},boss:s.boss||null};}catch(e){return {keys:{},best:{},boss:null};}}
+function load(){try{var s=JSON.parse(localStorage.getItem(STORE_KEY)||'{}');return {keys:s.keys||{},best:s.best||{},boss:s.boss||null,name:typeof s.name==='string'?cleanName(s.name):null};}catch(e){return {keys:{},best:{},boss:null,name:null};}}
+function cleanName(s){return String(s).replace(/[\u0000-\u001f\u007f]/g,'').replace(/\s+/g,' ').trim().slice(0,20).trim();}
 function save(){try{localStorage.setItem(STORE_KEY,JSON.stringify(P));}catch(e){}}
 var app=document.getElementById('app');
+var NAME_MAX=20;
+function nm(){return P.name?esc(P.name):'';}
+function withName(s){return P.name?s+', '+nm():s;}
 var S={quiz:null,entry:'',sel:[],answered:false,sieve:null,fact:{n:360,step:0},chk:2457,pair:[24,36]};
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 function nKeys(){var c=0;for(var i=1;i<=10;i++)if(P.keys[i])c++;return c;}
@@ -386,10 +390,11 @@ window.addEventListener('hashchange',render);
 document.getElementById('nav-map').onclick=function(){go('#/');};
 document.getElementById('nav-tools').onclick=function(){go('#/tools');};
 document.getElementById('nav-book').onclick=function(){go('#/book');};
-var OKMSG=['Świetnie!','Brawo, Mikołaj!','Pan Reszta zgrzyta zębami!','Klucz coraz bliżej!','Super, tak trzymaj!','Zerek skacze z radości!'];
+function OKMSG(){return ['Świetnie!',withName('Brawo')+'!','Pan Reszta zgrzyta zębami!','Klucz coraz bliżej!','Super, tak trzymaj!','Zerek skacze z radości!'];}
 var BADMSG=['Ups! Pan Reszta zabrał okruszek… ale spokojnie:','Prawie! Zobacz, jak to policzyć:','Nic straconego – oto wyjaśnienie:','Pomyłki uczą najwięcej. Popatrz:'];
 
 function render(){var h=location.hash||'#/';var p=h.slice(2).split('/');window.scrollTo(0,0);
+  if(P.name===null||p[0]==='imie')return nameScreen();
   if(p[0]==='ch')return chapter(+p[1]);
   if(p[0]==='quiz'){if(!S.quiz)return go('#/');return quiz();}
   if(p[0]==='result'){if(!S.quiz)return go('#/');return result();}
@@ -399,7 +404,7 @@ function render(){var h=location.hash||'#/';var p=h.slice(2).split('/');window.s
   return home();}
 
 function home(){setNav('map');var k=nKeys();
-  var h=top('Kraina Liczb')+'<div class="card"><div class="zerek"><div class="av">0️⃣</div><div><b>Zerek:</b> Cześć, Mikołaj! Pan Reszta psuje porządek w Krainie Liczb. Zbierz <b>10 kluczy wiedzy</b> – w każdym miejscu rozwiąż co najmniej 8 z 10 zadań. Ostatni klucz zdobędziesz w pojedynku!</div></div>'
+  var h=top('Kraina Liczb')+'<div class="card"><div class="zerek"><div class="av">0️⃣</div><div><b>Zerek:</b> '+withName('Cześć')+'! Pan Reszta psuje porządek w Krainie Liczb. Zbierz <b>10 kluczy wiedzy</b> – w każdym miejscu rozwiąż co najmniej 8 z 10 zadań. Ostatni klucz zdobędziesz w pojedynku!</div></div>'
   +'<div class="topinfo"><span>Postęp wyprawy</span><span>'+k+' / 10 kluczy</span></div><div class="bar"><div style="width:'+k*10+'%"></div></div>'+keysRow()+'</div><div class="map">';
   CH.forEach(function(ch){var b=P.best[ch.id];h+='<button class="place'+(P.keys[ch.id]?' done':'')+'" data-go="#/ch/'+ch.id+'"><span class="emo">'+ch.emo+'</span><span class="nr">Rozdział '+ch.id+'</span><span class="tt">'+ch.title+'</span><span class="st">'+(b!=null?'Najlepszy wynik: '+b+'/10':'Jeszcze nie odwiedzone')+'</span></button>';});
   h+='<button class="place boss'+(P.keys[10]?' done':'')+'" data-go="#/ch/10"><span class="emo">🧥⚔️</span><span class="nr">Rozdział 10</span><span class="tt">Pojedynek z Panem Resztą</span><span class="st">'+(P.boss?'Ostatni wynik: '+P.boss.score+'/15':'15 zadań ze wszystkiego')+'</span></button>';
@@ -436,7 +441,7 @@ function parseResp(t){if(t.kind==='tf'||t.kind==='choice')return S.sel.length?S.
   var sep=t.kind==='list'?',':'×';var parts=S.entry.split(sep).filter(function(x){return x!=='';}).map(Number);return parts.length?parts:null;}
 function canonText(t){if(t.kind==='tf'||t.kind==='choice')return t.options[t.canonical];if(t.kind==='multi')return t.canonical.length?t.canonical.map(function(i){return t.options[i];}).join(', '):'żadna';if(t.kind==='fact')return C.prodStr(t.canonical);if(t.kind==='list')return t.canonical.join(', ');return C.fmt(t.canonical);}
 function feedback(t){if(!S.answered)return '';var ok=S.lastOk;var last=S.quiz.i===S.quiz.tasks.length-1;
-  return '<div class="fb '+(ok?'ok':'bad')+'"><h4>'+(ok?'✅ '+R.pick(OKMSG):'❌ '+R.pick(BADMSG))+'</h4>'+(ok?'':'<p><b>Poprawna odpowiedź:</b> '+esc(canonText(t))+(t.meta&&t.meta.f==='open'?' (to tylko przykład)':'')+'</p>')+'<p>'+t.explain+'</p></div><button class="btn gold block" style="margin-top:12px" data-act="next">'+(last?'Zobacz wynik 🏁':'Dalej ➜')+'</button>';}
+  return '<div class="fb '+(ok?'ok':'bad')+'"><h4>'+(ok?'✅ '+R.pick(OKMSG()):'❌ '+R.pick(BADMSG))+'</h4>'+(ok?'':'<p><b>Poprawna odpowiedź:</b> '+esc(canonText(t))+(t.meta&&t.meta.f==='open'?' (to tylko przykład)':'')+'</p>')+'<p>'+t.explain+'</p></div><button class="btn gold block" style="margin-top:12px" data-act="next">'+(last?'Zobacz wynik 🏁':'Dalej ➜')+'</button>';}
 function doCheck(){var t=cur();var r=parseResp(t);if(r===null||(t.kind==='multi'&&false)){toast(t.kind==='tf'||t.kind==='choice'?'Wybierz odpowiedź':'Wpisz odpowiedź');return;}
   if(t.kind==='multi'&&!r.length&&t.canonical.length){toast('Zaznacz przynajmniej jedną odpowiedź');return;}
   var ok=t.check(r);S.answered=true;S.lastOk=ok;if(ok)S.quiz.score++;else S.quiz.wrong.push(t);quiz();}
@@ -514,10 +519,12 @@ function nOut(){var a=S.pair[0],b=S.pair[1],o=document.getElementById('nout');if
   h+='<div class="ex">Sprawdzenie: NWD · NWW = '+g+' · '+C.fmt(l)+' = '+C.fmt(g*l)+', a '+a+' · '+b+' = '+C.fmt(a*b)+' ✓</div>';o.innerHTML=h;}
 
 // ===== Księga =====
-function book(){setNav('book');var all=nKeys()===10;var h=top('📖 Wielka Księga Zasad')+'<div class="card center">'+(all?'<div class="big-emo">🎉</div><p><b>Masz wszystkie 10 kluczy!</b> Jesteś gotowy na sprawdzian 30 października. Powodzenia, Mikołaj!</p>':'<p>Masz '+nKeys()+' z 10 kluczy. Księgę możesz czytać zawsze – to ściąga do powtórki przed sprawdzianem.</p>')+keysRow()+'</div>';
+function book(){setNav('book');var all=nKeys()===10;var h=top('📖 Wielka Księga Zasad')+'<div class="card center">'+(all?'<div class="big-emo">🎉</div><p><b>Masz wszystkie 10 kluczy!</b> Sprawdzian ci niestraszny. '+withName('Powodzenia')+'!</p>':'<p>Masz '+nKeys()+' z 10 kluczy. Księgę możesz czytać zawsze – to ściąga do powtórki przed sprawdzianem.</p>')+keysRow()+'</div>';
   CH.forEach(function(ch){h+='<div class="card"><details'+(ch.id===1?' open':'')+'><summary>'+(P.keys[ch.id]?'🔑':'🔒')+' Strona '+ch.id+'. '+ch.topic+'</summary>'+ch.rule+'</details></div>';});
   h+='<div class="card"><details><summary>🧥 Strona 10. NWD czy NWW?</summary><div class="rule">Dzielimy na <b>równe części</b>, jak najwięcej paczek, jak najdłuższe kawałki → <b>NWD</b> (wynik nie większy od danych liczb).<br>Coś się <b>powtarza</b> i pytamy, kiedy znów <b>razem</b> → <b>NWW</b> (wynik nie mniejszy od danych liczb).</div><div class="rule">Zawsze sprawdzaj: rozkład – mnożeniem; NWD – czy obie liczby się przez nie dzielą; NWW – czy dzieli się przez obie liczby. Podkreślaj w poleceniu: „mniejsze od”, „co najmniej”, „dwucyfrowe”, „wszystkie”.</div></details></div>';
-  h+='<div class="card center"><button class="btn secondary" data-act="reset">Wyzeruj postęp</button></div>';app.innerHTML=h;}
+  h+='<div class="card center"><p class="muted">Gracz: <b>'+(P.name?nm():'bez imienia')+'</b></p><div class="row"><button class="btn secondary" data-go="#/imie">✏️ Zmień imię</button><button class="btn secondary" data-act="reset">Wyzeruj postęp</button></div></div>';app.innerHTML=h;}
+function nameScreen(){setNav('book');var first=P.name===null;app.innerHTML='<header class="top"><span style="font-size:1.8rem">0️⃣</span><h1>Kraina Liczb</h1></header><div class="card center"><div class="big-emo">0️⃣👋</div><h2>Jak masz na imię?</h2><div class="zerek" style="text-align:left"><div class="av">0️⃣</div><div><b>Zerek:</b> '+(first?'Cześć! Jestem Zerek, mała okrągła cyferka zero. Razem zbierzemy 10 kluczy wiedzy i pokonamy Pana Resztę. Najpierw powiedz mi, jak się do ciebie zwracać.':'Chcesz zmienić imię? Klucze i wyniki zostaną.')+'</div></div><form id="nameform" autocomplete="off"><label for="namein" class="muted">Wpisz swoje imię (do '+NAME_MAX+' znaków)</label><input id="namein" class="num" type="text" maxlength="'+NAME_MAX+'" value="'+(P.name?nm():'')+'" placeholder="np. Ola, Kuba" style="text-align:center;margin:8px 0 12px"><button class="btn gold block" type="submit">Ruszamy! 🚀</button></form><button class="btn secondary block" style="margin-top:10px" data-act="skipName">'+(first?'Pomiń':'Anuluj')+'</button></div>';
+  var f=document.getElementById('nameform');f.onsubmit=function(e){e.preventDefault();var v=cleanName(document.getElementById('namein').value);P.name=v;save();toast(v?withName('Miło cię poznać')+'!':'Gramy bez imienia – też dobrze!');go('#/');};}
 
 // ===== zdarzenia =====
 app.addEventListener('click',function(e){var el=e.target.closest('[data-go],[data-act]');if(!el)return;
@@ -534,7 +541,8 @@ app.addEventListener('click',function(e){var el=e.target.closest('[data-go],[dat
   else if(a==='svReset'){newSieve();sieve();}
   else if(a==='fStep'){S.fact.step++;fOut();}
   else if(a==='fAll'){S.fact.step=99;fOut();}
-  else if(a==='reset'){if(confirm('Na pewno wyzerować wszystkie klucze i wyniki?')){P={keys:{},best:{},boss:null};save();book();toast('Postęp wyzerowany');}}
+  else if(a==='skipName'){if(P.name===null){P.name='';save();}go('#/');}
+  else if(a==='reset'){if(confirm('Na pewno wyzerować wszystkie klucze i wyniki?')){P={keys:{},best:{},boss:null,name:P.name};save();book();toast('Postęp wyzerowany');}}
 });
 function pressKey(k){if(S.answered)return;var t=cur();if(k==='B')S.entry=S.entry.slice(0,-1);else if(k==='C')S.entry='';else if(k===','||k==='×'){if(S.entry&&!/[,×]$/.test(S.entry))S.entry+=k;}else{if(S.entry.replace(/[,×]/g,'').length<40){if(t.kind==='num'&&S.entry.length>=7)return;S.entry+=k;}}
   var d=document.getElementById('disp');if(d){var sep=t.kind==='list'?',':t.kind==='fact'?'×':'';d.className='display'+(S.entry?'':' empty');d.textContent=S.entry?S.entry.replace(/×/g,' × ').replace(/,/g,', '):(t.kind==='list'?'np. 3, 6, 9':t.kind==='fact'?'np. 2 × 2 × 3':'wpisz liczbę');}}
